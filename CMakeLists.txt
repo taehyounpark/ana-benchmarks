@@ -38,6 +38,11 @@ target_compile_features(task_6 PRIVATE cxx_std_17)
 target_include_directories(task_6 PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${ANA_INCLUDE_DIRS} ${ROOT_INCLUDE_DIR} ${ROOT_LIBRARY_DIR})
 target_link_libraries(task_6 ana rootana ${ROOT_LIBRARIES})
 
+add_executable(task_8 tasks/task_8/task.cxx)
+target_compile_features(task_8 PRIVATE cxx_std_17)
+target_include_directories(task_8 PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${ANA_INCLUDE_DIRS} ${ROOT_INCLUDE_DIR} ${ROOT_LIBRARY_DIR})
+target_link_libraries(task_8 ana rootana ${ROOT_LIBRARIES})
+
 set(SETUP ${CMAKE_CURRENT_BINARY_DIR}/setup.sh)
 file(WRITE ${SETUP} "#!/bin/bash\n")
 file(APPEND ${SETUP} "source ana/setup.sh\n")
