@@ -1,0 +1,6 @@
+[submodule "ana"]
+	path = ana
+	url = git@github.com:taehyounpark/ana.git
+[submodule "rootana"]
+	path = rootana
+	url = git@github.com:taehyounpark/rootana.git
