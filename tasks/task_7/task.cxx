@@ -8,7 +8,6 @@
 #include "ana/definition.h"
 
 #include "TCanvas.h"
-#include "TLorentzVector.h"
 #include "ROOT/RVec.hxx"
 
 #include "rootana/Tree.h"
@@ -22,7 +21,6 @@ using VecUI = Vec<unsigned int>;
 using VecI = Vec<int>;
 using VecF = Vec<float>;
 using VecD = Vec<double>;
-using P4 = TLorentzVector;
 
 
 class JetLepDRReq : public ana::column::definition<VecI(VecF,VecF,VecF,VecF,VecF)>
@@ -88,7 +86,7 @@ void task(int n) {
   auto cut_1jet = ds.filter<cut>("1jet")(n_jet >= ds.constant(1));
   auto cut_goodjet = cut_1jet.filter<cut>("goodjet",[](VecI const& goodjet){return Sum(goodjet);})(goodjet_mask);
 
-  auto goodjet_sumpt_hist = ds.book<Histogram<1,float>>("goodjet_sumpt",185,15,200)(goodjet_sumpt).at(cut_goodjet);
+  auto goodjet_sumpt_hist = ds.book<Histogram<1,float>>("goodjet_sumpt",185,15,200).fill(goodjet_sumpt).at(cut_goodjet);
 
   TCanvas c;
   goodjet_sumpt_hist->Draw();
