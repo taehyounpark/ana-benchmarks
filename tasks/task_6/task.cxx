@@ -28,11 +28,11 @@ class TriJetLoc : public ana::column::definition<Vec<std::size_t>(Vec<P4>)>
     float distance = 1e9;
     const auto top_mass = 172.5;
     std::size_t idx1 = 0, idx2 = 1, idx3 = 2;
-    for (std::size_t i = 0; i <= jets_p4->size() - n; i++) {
+    for (std::size_t i = 0; i <= jets_p4->size() - n; ++i) {
       auto p1 = (*jets_p4)[i];
-      for (std::size_t j = i + 1; j <= jets_p4->size() - n + 1; j++) {
+      for (std::size_t j = i + 1; j <= jets_p4->size() - n + 1; ++j) {
         auto p2 = (*jets_p4)[j];
-        for (std::size_t k = j + 1; k <= jets_p4->size() - n + 2; k++) {
+        for (std::size_t k = j + 1; k <= jets_p4->size() - n + 2; ++k) {
           auto p3 = (*jets_p4)[k];
           const auto candidate_mass = (p1 + p2 + p3).M();
           const auto candidate_distance = std::abs(candidate_mass - top_mass);
@@ -51,7 +51,7 @@ class TriJetLoc : public ana::column::definition<Vec<std::size_t>(Vec<P4>)>
 
 float get_trijet_pt(Vec<P4> const& p4s, Vec<std::size_t> const& idx)
 {
-  return (p4s[0] + p4s[1] + p4s[2]).Pt();
+  return (p4s[idx[0]] + p4s[idx[1]] + p4s[idx[2]]).Pt();
 }
 
 float get_trijet_maxval(Vec<float> const& vals, Vec<std::size_t> const& idx)
@@ -91,8 +91,8 @@ void task(int n) {
   auto trijet_pt = ds.define(std::function(get_trijet_pt))(jets_p4, trijet_loc);
   auto trijet_maxbtag = ds.define(std::function(get_trijet_maxval))(jets_btag, trijet_loc);
 
-  auto trijet_pt_hist = ds.book<Histogram<1,float>>("trijet_pt",25,15,40).fill(trijet_pt).at(cut_3jets);
-  auto trijet_maxbtag_hist = ds.book<Histogram<1,float>>("trijet_maxbtag",50,0,1).fill(trijet_maxbtag).at(cut_3jets);
+  auto trijet_pt_hist = ds.book<Histogram<1,float>>("trijet_pt",100,0,250).fill(trijet_pt).at(cut_3jets);
+  auto trijet_maxbtag_hist = ds.book<Histogram<1,float>>("trijet_maxbtag",100,0,1).fill(trijet_maxbtag).at(cut_3jets);
   
   TCanvas c;
   c.Divide(2,1);
