@@ -7,7 +7,7 @@
 #include "ana/aggregate.h"
 
 #include "TCanvas.h"
-#include "TLorentzVector.h"
+#include "Math/Vector4D.h"
 #include "ROOT/RVec.hxx"
 
 #include "rootana/Tree.h"
@@ -18,7 +18,7 @@ using VecUI = Vec<unsigned int>;
 using VecI = Vec<int>;
 using VecF = Vec<float>;
 using VecD = Vec<double>;
-using P4 = TLorentzVector;
+using P4 = ROOT::Math::PtEtaPhiMVector;
 
 class TopTriJet : public ana::column::definition<Vec<std::size_t>(Vec<P4>)>
 {
@@ -35,7 +35,7 @@ public:
         auto p2 = (*jets_p4)[j];
         for (std::size_t k = j + 1; k <= jets_p4->size() - n + 2; ++k) {
           auto p3 = (*jets_p4)[k];
-          const auto candidate_mass = (p1 + p2 + p3).M();
+          const auto candidate_mass = (p1 + p2 + p3).mass();
           const auto candidate_distance = std::abs(candidate_mass - m_top_mass);
           if (distance<0 || candidate_distance < distance) {
             distance = candidate_distance;
@@ -49,12 +49,12 @@ public:
     return {idx1, idx2, idx3};
   }
 protected:
-  float m_top_mass;
+  const float m_top_mass;
 };
 
 float get_trijet_pt(Vec<P4> const& p4s, Vec<std::size_t> const& idx)
 {
-  return (p4s[idx[0]] + p4s[idx[1]] + p4s[idx[2]]).Pt();
+  return (p4s[idx[0]] + p4s[idx[1]] + p4s[idx[2]]).pt();
 }
 
 float get_trijet_maxval(Vec<float> const& vals, Vec<std::size_t> const& idx)
@@ -84,9 +84,9 @@ void task(int n) {
   auto cut_3jets = ds.filter<cut>("3jets")(njets >= ds.constant(3));
 
   auto jets_p4 = ds.define([](VecF const& pts, VecF const& etas, VecF const& phis, VecF const& ms){
-    Vec<P4> p4s(pts.size(), P4());
+    Vec<P4> p4s;
     for (size_t i=0 ; i<pts.size(); ++i) {
-      p4s[i].SetPtEtaPhiM(pts[i],etas[i],phis[i],ms[i]);
+      p4s.emplace_back(pts[i],etas[i],phis[i],ms[i]);
     }
     return p4s;
   })(jets_pt, jets_eta, jets_phi, jets_m);

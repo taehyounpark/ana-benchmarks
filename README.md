@@ -1,5 +1,15 @@
 # ana-benchmarks
 
+## Build
+
+```console
+$ mkdir build && cd build/
+$ cmake ../ & make -j4
+$ source setup.sh
+$ cd ../results/
+$ task_<i> <num_threads>
+```
+
 ## Benchmark Tasks
 
 1. Plot the <i>E</i><sub>T</sub><sup>miss</sup> of all events.
@@ -17,4 +27,4 @@
 | ---             | ---:   | ---:   | ---:   |  ---:  | ---:   | ---:   |  ---:  | ---:   |
 | single-threaded |  44.74 |  87.01 |        |        |        |        |        |        |
 | 2 threads       |  24.45 |  50.05 |        |        |        |        |        |        |
-| 10 threads      |   5.77 |   9.63 |  30.82 |  14.52 |  31.33 | 176.05 |        |        |
+| 10 threads      |   5.77 |   9.63 |  30.82 |  14.52 |  31.33 | 150.96 |  65.56 |  34.91 |
