@@ -31,5 +31,8 @@
 *.out
 *.app
 
+*.log
 *.root
 build/
+run/
+data/
