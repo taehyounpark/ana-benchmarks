@@ -20,13 +20,14 @@ using VecF = Vec<float>;
 using VecD = Vec<double>;
 using P4 = TLorentzVector;
 
-class TriJetLoc : public ana::column::definition<Vec<std::size_t>(Vec<P4>)>
+class TopTriJet : public ana::column::definition<Vec<std::size_t>(Vec<P4>)>
 {
+public:
+  TopTriJet(float top_mass) : m_top_mass(top_mass) {};
   virtual Vec<std::size_t> evaluate(ana::observable<Vec<P4>> jets_p4) const override
   {
     constexpr std::size_t n = 3;
-    float distance = 1e9;
-    const auto top_mass = 172.5;
+    float distance = -1.0;
     std::size_t idx1 = 0, idx2 = 1, idx3 = 2;
     for (std::size_t i = 0; i <= jets_p4->size() - n; ++i) {
       auto p1 = (*jets_p4)[i];
@@ -35,8 +36,8 @@ class TriJetLoc : public ana::column::definition<Vec<std::size_t>(Vec<P4>)>
         for (std::size_t k = j + 1; k <= jets_p4->size() - n + 2; ++k) {
           auto p3 = (*jets_p4)[k];
           const auto candidate_mass = (p1 + p2 + p3).M();
-          const auto candidate_distance = std::abs(candidate_mass - top_mass);
-          if (candidate_distance < distance) {
+          const auto candidate_distance = std::abs(candidate_mass - m_top_mass);
+          if (distance<0 || candidate_distance < distance) {
             distance = candidate_distance;
             idx1 = i;
             idx2 = j;
@@ -47,6 +48,8 @@ class TriJetLoc : public ana::column::definition<Vec<std::size_t>(Vec<P4>)>
     }
     return {idx1, idx2, idx3};
   }
+protected:
+  float m_top_mass;
 };
 
 float get_trijet_pt(Vec<P4> const& p4s, Vec<std::size_t> const& idx)
@@ -87,11 +90,11 @@ void task(int n) {
     }
     return p4s;
   })(jets_pt, jets_eta, jets_phi, jets_m);
-  auto trijet_loc = ds.define<TriJetLoc>()(jets_p4);
-  auto trijet_pt = ds.define(std::function(get_trijet_pt))(jets_p4, trijet_loc);
-  auto trijet_maxbtag = ds.define(std::function(get_trijet_maxval))(jets_btag, trijet_loc);
+  auto top_trijet = ds.define<TopTriJet>(172.5)(jets_p4);
+  auto trijet_pt = ds.define(std::function(get_trijet_pt))(jets_p4, top_trijet);
+  auto trijet_maxbtag = ds.define(std::function(get_trijet_maxval))(jets_btag, top_trijet);
 
-  auto trijet_pt_hist = ds.book<Histogram<1,float>>("trijet_pt",100,0,250).fill(trijet_pt).at(cut_3jets);
+  auto trijet_pt_hist = ds.book<Histogram<1,float>>("trijet_pt",100,15,40).fill(trijet_pt).at(cut_3jets);
   auto trijet_maxbtag_hist = ds.book<Histogram<1,float>>("trijet_maxbtag",100,0,1).fill(trijet_maxbtag).at(cut_3jets);
   
   TCanvas c;
