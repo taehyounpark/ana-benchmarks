@@ -12,6 +12,7 @@ $ task_<i> <num_threads>
 
 ## Benchmark Tasks
 
+As laid out by [IRIS HEP](https://github.com/iris-hep/adl-benchmarks-index/tree/master):
 1. Plot the <i>E</i><sub>T</sub><sup>miss</sup> of all events.
 1. Plot the <i>p</i><sub>T</sub> of all jets.
 1. Plot the <i>p</i><sub>T</sub> of jets with |<i>η</i>| < 1.
