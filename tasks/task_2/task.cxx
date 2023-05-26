@@ -4,7 +4,7 @@
 #include "TCanvas.h"
 
 #include "rootana/Tree.h"
-#include "rootana/Histogram.h"
+#include "rootana/Hist.h"
 
 template <typename T>
 using RVec = ROOT::RVec<T>;
@@ -21,7 +21,7 @@ void task(int n) {
   auto ds = ana::analysis<Tree>({"Run2012B_SingleMu.root"}, "Events");
   auto jets_pt = ds.read<RVecF>("Jet_pt");
   auto all = ds.filter<cut>("all")(ds.constant(true));
-  auto jets_pt_hist = ds.book<Histogram<1,RVecF>>("jets_pt",45,15,60).fill(jets_pt).at(all);
+  auto jets_pt_hist = ds.book<Hist<1,RVecF>>("jets_pt",45,15,60).fill(jets_pt).at(all);
   TCanvas c;
   jets_pt_hist->Draw();
   c.SaveAs("task_2.pdf");

@@ -7,7 +7,7 @@
 #include "ROOT/RVec.hxx"
 
 #include "rootana/Tree.h"
-#include "rootana/Histogram.h"
+#include "rootana/Hist.h"
 
 using cut = ana::selection::cut;
 using weight = ana::selection::weight;
@@ -109,7 +109,7 @@ void task(int n) {
   auto none = ds.filter<cut>("none")(ds.constant(false));
   auto all = incl || none;
 
-  auto jets_pt_hist = ds.book<Histogram<1,VecF>>("jets_pt",45,15,60).fill(jets_pt_sel).at(all);
+  auto jets_pt_hist = ds.book<Hist<1,VecF>>("jets_pt",45,15,60).fill(jets_pt_sel).at(all);
 
   TCanvas c;
   jets_pt_hist->Draw();

@@ -11,7 +11,7 @@
 #include "Math/Vector4D.h"
 
 #include "rootana/Tree.h"
-#include "rootana/Histogram.h"
+#include "rootana/Hist.h"
 
 template <typename T> using Vec = ROOT::RVec<T>;
 using VecUI = Vec<unsigned int>;
@@ -105,7 +105,7 @@ void task(int n) {
 
   auto cut_3l_sfos = ds.filter<cut>("3lep")((n_muon + n_elec) >= ds.constant(3)).filter<cut>("sfos")(add_lep_idx != ds.constant(PLACEHOLDER_VALUE));
 
-  auto mt_hist = ds.book<Histogram<1,float>>("mt",100,0,200).fill(mt).at(cut_3l_sfos);
+  auto mt_hist = ds.book<Hist<1,float>>("mt",100,0,200).fill(mt).at(cut_3l_sfos);
 
   TCanvas c;
   mt_hist->Draw();

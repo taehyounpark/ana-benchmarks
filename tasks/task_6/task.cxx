@@ -10,7 +10,7 @@
 #include "ROOT/RVec.hxx"
 
 #include "rootana/Tree.h"
-#include "rootana/Histogram.h"
+#include "rootana/Hist.h"
 
 template <typename T> using Vec = ROOT::RVec<T>;
 using VecUI = Vec<unsigned int>;
@@ -93,8 +93,8 @@ void task(int n) {
   auto trijet_pt = ds.define(std::function(get_trijet_pt))(jets_p4, top_trijet);
   auto trijet_maxbtag = ds.define(std::function(get_trijet_maxval))(jets_btag, top_trijet);
 
-  auto trijet_pt_hist = ds.book<Histogram<1,float>>("trijet_pt",100,15,40).fill(trijet_pt).at(cut_3jets);
-  auto trijet_maxbtag_hist = ds.book<Histogram<1,float>>("trijet_maxbtag",100,0,1).fill(trijet_maxbtag).at(cut_3jets);
+  auto trijet_pt_hist = ds.book<Hist<1,float>>("trijet_pt",100,15,40).fill(trijet_pt).at(cut_3jets);
+  auto trijet_maxbtag_hist = ds.book<Hist<1,float>>("trijet_maxbtag",100,0,1).fill(trijet_maxbtag).at(cut_3jets);
   
   TCanvas c;
   c.Divide(2,1);

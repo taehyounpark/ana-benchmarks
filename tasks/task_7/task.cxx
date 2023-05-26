@@ -10,7 +10,7 @@
 #include "ROOT/RVec.hxx"
 
 #include "rootana/Tree.h"
-#include "rootana/Histogram.h"
+#include "rootana/Hist.h"
 
 using cut = ana::selection::cut;
 using weight = ana::selection::weight;
@@ -85,7 +85,7 @@ void task(int n) {
   auto cut_1jet = ds.filter<cut>("1jet")(n_jet >= ds.constant(1));
   auto cut_goodjet = cut_1jet.filter<cut>("goodjet",[](VecI const& goodjet){return Sum(goodjet);})(goodjet_mask);
 
-  auto goodjet_sumpt_hist = ds.book<Histogram<1,float>>("goodjet_sumpt",185,15,200).fill(goodjet_sumpt).at(cut_goodjet);
+  auto goodjet_sumpt_hist = ds.book<Hist<1,float>>("goodjet_sumpt",185,15,200).fill(goodjet_sumpt).at(cut_goodjet);
 
   TCanvas c;
   goodjet_sumpt_hist->Draw();

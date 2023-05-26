@@ -89,6 +89,7 @@
     "typeindex": "cpp",
     "unordered_set": "cpp",
     "variant": "cpp",
-    "stop_token": "cpp"
+    "stop_token": "cpp",
+    "cassert": "cpp"
   }
 }

@@ -5,7 +5,7 @@
 #include "Math/Vector4D.h"
 
 #include "rootana/Tree.h"
-#include "rootana/Histogram.h"
+#include "rootana/Hist.h"
 
 template <typename T>
 using RVec = ROOT::RVec<T>;
@@ -54,7 +54,7 @@ void task(int n) {
   // do the combinatorics
   auto cut_dimuon_os_60m120 = cut_dimuon.filter<cut>("dimuon_os_60m120",[](RVecF const& dimuons_m){return Sum(dimuons_m > 60 && dimuons_m < 120) > 0;})(dimuons_m);
 
-  auto met_hist = ds.book<Histogram<1,float>>("met",100,0,200).fill(met).at(cut_dimuon_os_60m120);
+  auto met_hist = ds.book<Hist<1,float>>("met",100,0,200).fill(met).at(cut_dimuon_os_60m120);
   TCanvas c;
   met_hist->Draw();
   c.SaveAs("task_5.pdf");
