@@ -4,7 +4,6 @@
 #include <functional>
 
 #include "ana/analysis.h"
-#include "ana/aggregate.h"
 #include "ana/definition.h"
 
 #include "TCanvas.h"
