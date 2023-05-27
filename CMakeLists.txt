@@ -51,5 +51,4 @@ set(SETUP ${CMAKE_CURRENT_BINARY_DIR}/setup.sh)
 file(WRITE ${SETUP} "#!/bin/bash\n")
 file(APPEND ${SETUP} "export PATH=$PATH:" ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
 
-# file(APPEND ${SETUP} "source ana/setup.sh\n")
 # file(APPEND ${SETUP} "source rootana/setup.sh\n")

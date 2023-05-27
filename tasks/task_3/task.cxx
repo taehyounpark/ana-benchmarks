@@ -17,6 +17,8 @@ using VecI = Vec<int>;
 using VecF = Vec<float>;
 using VecD = Vec<double>;
 
+// doing some stupid things below to try things out...
+
 template <typename T> using obs = typename ana::observable<T>;
 enum class JetProperty { pt, eta, phi, m };
 class Jet : public ana::column::representation<Jet(float,float,float,float)>
@@ -57,6 +59,7 @@ void task(int n) {
 
   // make a tuple of up to 10 jets
   auto jet_tuple = make_jet_tuple<0,1,2,3,4,5,5,6,7,8,9>(ds,jets_pt,jets_eta,jets_phi,jets_m);
+
 
   // reminder -- each "Jet" is simply a "representation", so nothing is being computed unless we make it to,
   // i.e. doesn't matter if an event only has e.g. 6 jets, as long as we know not to ask for the 7th!
