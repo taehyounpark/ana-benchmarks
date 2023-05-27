@@ -24,8 +24,12 @@ From [IRIS HEP](https://github.com/iris-hep/adl-benchmarks-index/tree/master):
 
 ## Task Performance (elapsed time [s])
 
+Hardware:
+- CPU: 2 x Intel E5-2683 v4 Broadwell @ 2.1Ghz
+- I/O: SSD
+
 | Threads         | Task 1 | Task 2 | Task 3 | Task 4 | Task 5 | Task 6 | Task 7 | Task 8 |
-| :---            | ---:   | ---:   | ---:   |  ---:  | ---:   | ---:   |  ---:  | ---:   |
-| 1 thread        |  20.13 |  87.01 | 124.05 |        |        |        |        |        |
-| 2 threads       |  11.42 |  50.05 |  66.95 |        |        |        |        |        |
-| 10 threads      |   3.92 |   9.63 |  22.34 |  14.52 |  31.33 | 150.96 |  65.56 |  34.91 |
+| :---            | ---:   | ---:   | ---:   | ---:   | ---:   | ---:   |  ---:  | ---:   |
+| 1 thread        |  32.63 |  87.01 | 124.05 | 125.84 |        |        |        |        |
+| 2 threads       |  17.96 |  50.05 |  66.95 |  57.16 |        |        |        |        |
+| 10 threads      |   5.07 |   9.63 |  22.34 |  12.19 |  31.33 | 150.96 |  65.56 |  34.91 |
