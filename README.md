@@ -1,6 +1,6 @@
 # ana-benchmarks
 
-## Build
+## Buildling & reproducing results
 
 ```console
 $ mkdir build && cd build/
@@ -10,9 +10,9 @@ $ cd ../results/
 $ task_<i> <num_threads>
 ```
 
-## Benchmark Tasks
+## Benchmark tasks
 
-As laid out by [IRIS HEP](https://github.com/iris-hep/adl-benchmarks-index/tree/master):
+From [IRIS HEP](https://github.com/iris-hep/adl-benchmarks-index/tree/master):
 1. Plot the <i>E</i><sub>T</sub><sup>miss</sup> of all events.
 1. Plot the <i>p</i><sub>T</sub> of all jets.
 1. Plot the <i>p</i><sub>T</sub> of jets with |<i>η</i>| < 1.
