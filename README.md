@@ -26,6 +26,6 @@ As laid out by [IRIS HEP](https://github.com/iris-hep/adl-benchmarks-index/tree/
 
 | Threads         | Task 1 | Task 2 | Task 3 | Task 4 | Task 5 | Task 6 | Task 7 | Task 8 |
 | ---             | ---:   | ---:   | ---:   |  ---:  | ---:   | ---:   |  ---:  | ---:   |
-| single-threaded |  44.74 |  87.01 |        |        |        |        |        |        |
-| 2 threads       |  24.45 |  50.05 |        |        |        |        |        |        |
-| 10 threads      |   5.77 |   9.63 |  30.82 |  14.52 |  31.33 | 150.96 |  65.56 |  34.91 |
+| single-threaded |  20.13 |  87.01 |        |        |        |        |        |        |
+| 2 threads       |  11.42 |  50.05 |        |        |        |        |        |        |
+| 10 threads      |  3.92 |   9.63 |  30.82 |  14.52 |  31.33 | 150.96 |  65.56 |  34.91 |

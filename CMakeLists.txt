@@ -6,7 +6,6 @@ add_subdirectory(ana/)
 add_subdirectory(rootana/)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-# set(CMAKE_BUILD_TYPE Debug)
 
 add_executable(task_1 tasks/task_1/task.cxx)
 target_compile_features(task_1 PRIVATE cxx_std_17)
@@ -50,6 +49,7 @@ target_link_libraries(task_8 ana rootana ${ROOT_LIBRARIES})
 
 set(SETUP ${CMAKE_CURRENT_BINARY_DIR}/setup.sh)
 file(WRITE ${SETUP} "#!/bin/bash\n")
-file(APPEND ${SETUP} "source ana/setup.sh\n")
-file(APPEND ${SETUP} "source rootana/setup.sh\n")
 file(APPEND ${SETUP} "export PATH=$PATH:"${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+
+# file(APPEND ${SETUP} "source ana/setup.sh\n")
+# file(APPEND ${SETUP} "source rootana/setup.sh\n")
