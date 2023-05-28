@@ -10,7 +10,7 @@ $ cd ../results/
 $ task_<i> <num_threads>
 ```
 
-## [IRIS HEP](https://github.com/iris-hep/adl-benchmarks-index/tree/master) tasks
+## [IRIS HEP ADL tasks](https://github.com/iris-hep/adl-benchmarks-index/tree/master)
 
 1. Plot the <i>E</i><sub>T</sub><sup>miss</sup> of all events.
 1. Plot the <i>p</i><sub>T</sub> of all jets.
