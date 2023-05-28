@@ -8,22 +8,22 @@
 #include "rootana/Hist.h"
 
 template <typename T>
-using RVec = ROOT::RVec<T>;
-using RVecUI = RVec<unsigned int>;
-using RVecI = RVec<int>;
-using RVecF = RVec<float>;
-using RVecD = RVec<double>;
+using Vec = ROOT::RVec<T>;
+using VecUI = Vec<unsigned int>;
+using VecI = Vec<int>;
+using VecF = Vec<float>;
+using VecD = Vec<double>;
 using FourVector = ROOT::Math::PtEtaPhiMVector;
 
 using cut = ana::selection::cut;
 using weight = ana::selection::weight;
 
-class dimuon_invariant_masses : public ana::column::definition<RVecF(RVecF pt, RVecF eta, RVecF phi, RVecF m, RVecF q)>
+class dimuon_invariant_masses : public ana::column::definition<VecF(VecF pt, VecF eta, VecF phi, VecF m, VecF q)>
 {
 public:
-  virtual RVecF evaluate(ana::observable<RVecF> pt, ana::observable<RVecF> eta, ana::observable<RVecF> phi, ana::observable<RVecF> m, ana::observable<RVecF> q) const override
+  virtual VecF evaluate(ana::observable<VecF> pt, ana::observable<VecF> eta, ana::observable<VecF> phi, ana::observable<VecF> m, ana::observable<VecF> q) const override
   {
-    ROOT::RVec<float> masses;
+    VecF masses;
     const auto c = ROOT::VecOps::Combinations(*pt, 2);
     for (auto i = 0u; i < c[0].size(); i++) {
       const auto i1 = c[0][i];
@@ -42,17 +42,17 @@ void task(int n) {
   auto ds = ana::analysis<Tree>({"Run2012B_SingleMu.root"}, "Events");
   auto met = ds.read<float>("MET_pt");
   auto nmuons = ds.read<unsigned int>("nMuon");
-  auto muons_pt = ds.read<RVecF>("Muon_pt");
-  auto muons_eta = ds.read<RVecF>("Muon_eta");
-  auto muons_phi = ds.read<RVecF>("Muon_phi");
-  auto muons_m = ds.read<RVecF>("Muon_mass");
-  auto muons_q = ds.read<RVecI>("Muon_charge");
+  auto muons_pt = ds.read<VecF>("Muon_pt");
+  auto muons_eta = ds.read<VecF>("Muon_eta");
+  auto muons_phi = ds.read<VecF>("Muon_phi");
+  auto muons_m = ds.read<VecF>("Muon_mass");
+  auto muons_q = ds.read<VecI>("Muon_charge");
   auto dimuons_m = ds.define<dimuon_invariant_masses>()(muons_pt,muons_eta,muons_phi,muons_m,muons_q);
 
   // require 2 muons beforehand to ensure combinatorics can work
   auto cut_dimuon = ds.filter<cut>("dimuon")(nmuons >= ds.constant(2));
   // do the combinatorics
-  auto cut_dimuon_os_60m120 = cut_dimuon.filter<cut>("dimuon_os_60m120",[](RVecF const& dimuons_m){return Sum(dimuons_m > 60 && dimuons_m < 120) > 0;})(dimuons_m);
+  auto cut_dimuon_os_60m120 = cut_dimuon.filter<cut>("dimuon_os_60m120",[](VecF const& dimuons_m){return Sum(dimuons_m > 60 && dimuons_m < 120) > 0;})(dimuons_m);
 
   auto met_hist = ds.book<Hist<1,float>>("met",100,0,200).fill(met).at(cut_dimuon_os_60m120);
   TCanvas c;

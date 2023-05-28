@@ -1,16 +1,17 @@
 #include "ana/analysis.h"
 
+#include <ROOT/RVec.hxx>
 #include "TCanvas.h"
 
 #include "rootana/Tree.h"
 #include "rootana/Hist.h"
 
 template <typename T>
-using RVec = ROOT::RVec<T>;
-using RVecUI = RVec<unsigned int>;
-using RVecI = RVec<int>;
-using RVecF = RVec<float>;
-using RVecD = RVec<double>;
+using Vec = ROOT::RVec<T>;
+using VecUI = Vec<unsigned int>;
+using VecI = Vec<int>;
+using VecF = Vec<float>;
+using VecD = Vec<double>;
 
 using cut = ana::selection::cut;
 using weight = ana::selection::weight;
@@ -19,9 +20,9 @@ void task(int n) {
   ana::multithread::enable(n);
   auto ds = ana::analysis<Tree>({"Run2012B_SingleMu.root"}, "Events");
   auto met = ds.read<float>("MET_pt");
-  auto jets_pt = ds.read<RVecF>("Jet_pt");
-  auto jets_eta = ds.read<RVecF>("Jet_eta");
-  auto njets_pt40 = ds.define([](RVecF const& jets_pt){return jets_pt[jets_pt > 40.0].size();})(jets_pt);
+  auto jets_pt = ds.read<VecF>("Jet_pt");
+  auto jets_eta = ds.read<VecF>("Jet_eta");
+  auto njets_pt40 = ds.define([](VecF const& jets_pt){return jets_pt[jets_pt > 40.0].size();})(jets_pt);
   auto cut_2jets = ds.filter<cut>("2jets")(njets_pt40 >= ds.constant(2));
   auto met_hist = ds.book<Hist<1,float>>("met",100,0,200).fill(met).at(cut_2jets);
   TCanvas c;

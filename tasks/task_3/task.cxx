@@ -2,8 +2,8 @@
 
 #include "ana/analysis.h"
 
+#include <ROOT/RVec.hxx>
 #include "TCanvas.h"
-#include "ROOT/RVec.hxx"
 
 #include "rootana/Tree.h"
 #include "rootana/Hist.h"

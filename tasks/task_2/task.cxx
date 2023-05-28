@@ -1,17 +1,18 @@
 #include <chrono>
 #include "ana/analysis.h"
 
+#include <ROOT/RVec.hxx>
 #include "TCanvas.h"
 
 #include "rootana/Tree.h"
 #include "rootana/Hist.h"
 
 template <typename T>
-using RVec = ROOT::RVec<T>;
-using RVecUI = RVec<unsigned int>;
-using RVecI = RVec<int>;
-using RVecF = RVec<float>;
-using RVecD = RVec<double>;
+using Vec = ROOT::RVec<T>;
+using VecUI = Vec<unsigned int>;
+using VecI = Vec<int>;
+using VecF = Vec<float>;
+using VecD = Vec<double>;
 
 using cut = ana::selection::cut;
 using weight = ana::selection::weight;
@@ -19,9 +20,9 @@ using weight = ana::selection::weight;
 void task(int n) {
   ana::multithread::enable(n);
   auto ds = ana::analysis<Tree>({"Run2012B_SingleMu.root"}, "Events");
-  auto jets_pt = ds.read<RVecF>("Jet_pt");
+  auto jets_pt = ds.read<VecF>("Jet_pt");
   auto all = ds.filter<cut>("all")(ds.constant(true));
-  auto jets_pt_hist = ds.book<Hist<1,RVecF>>("jets_pt",45,15,60).fill(jets_pt).at(all);
+  auto jets_pt_hist = ds.book<Hist<1,VecF>>("jets_pt",45,15,60).fill(jets_pt).at(all);
   TCanvas c;
   jets_pt_hist->Draw();
   c.SaveAs("task_2.pdf");
