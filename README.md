@@ -10,9 +10,8 @@ $ cd ../results/
 $ task_<i> <num_threads>
 ```
 
-## Benchmark tasks
+## [IRIS HEP](https://github.com/iris-hep/adl-benchmarks-index/tree/master) tasks
 
-From [IRIS HEP](https://github.com/iris-hep/adl-benchmarks-index/tree/master):
 1. Plot the <i>E</i><sub>T</sub><sup>miss</sup> of all events.
 1. Plot the <i>p</i><sub>T</sub> of all jets.
 1. Plot the <i>p</i><sub>T</sub> of jets with |<i>η</i>| < 1.
@@ -22,7 +21,7 @@ From [IRIS HEP](https://github.com/iris-hep/adl-benchmarks-index/tree/master):
 1. Plot the scalar sum in each event of the <i>p</i><sub>T</sub> of jets with <i>p</i><sub>T</sub> > 30 GeV that are not within 0.4 in Δ<i>R</i> of any light lepton with <i>p</i><sub>T</sub> > 10 GeV.
 1. For events with at least three light leptons and a same-flavor opposite-charge light lepton pair, find such a pair that has the invariant mass closest to 91.2 GeV in each event and plot the transverse mass of the system consisting of the missing tranverse momentum and the highest-<i>p</i><sub>T</sub> light lepton not in this pair.
 
-## Task Performance (elapsed time [s])
+## Performance (elapsed time [s])
 
 Hardware:
 - CPU: 2 x Intel E5-2683 v4 Broadwell @ 2.1Ghz
