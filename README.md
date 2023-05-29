@@ -10,8 +10,13 @@ $ cd ../results/
 $ task_<i> <num_threads>
 ```
 
-## [IRIS HEP ADL tasks](https://github.com/iris-hep/adl-benchmarks-index/tree/master)
+## [IRIS HEP ADL](https://github.com/iris-hep/adl-benchmarks-index/tree/master)
 
+Input data file:
+* [Converted to NanoAOD](https://github.com/cms-opendata-analyses/AOD2NanoAODOutreachTool) from [2012 CMS open data](http://opendata.cern.ch/record/6021):
+  * root://eospublic.cern.ch//eos/root-eos/benchmark/Run2012B_SingleMu.root (16 GiB, 53 million events)
+
+Tasks:
 1. Plot the <i>E</i><sub>T</sub><sup>miss</sup> of all events.
 1. Plot the <i>p</i><sub>T</sub> of all jets.
 1. Plot the <i>p</i><sub>T</sub> of jets with |<i>η</i>| < 1.
