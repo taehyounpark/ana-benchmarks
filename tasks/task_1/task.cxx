@@ -2,17 +2,18 @@
 #include <chrono>
 #include "ana/analysis.h"
 
+#include <ROOT/RVec.hxx>
 #include "TCanvas.h"
 
 #include "rootana/Tree.h"
 #include "rootana/Hist.h"
 
 template <typename T>
-using RVec = ROOT::RVec<T>;
-using RVecUI = RVec<unsigned int>;
-using RVecI = RVec<int>;
-using RVecF = RVec<float>;
-using RVecD = RVec<double>;
+using Vec = ROOT::RVec<T>;
+using VecUI = Vec<unsigned int>;
+using VecI = Vec<int>;
+using VecF = Vec<float>;
+using VecD = Vec<double>;
 
 using cut = ana::selection::cut;
 using weight = ana::selection::weight;

@@ -5,8 +5,7 @@
 
 #include "ana/analysis.h"
 
-#include "TCanvas.h"
-#include "ROOT/RVec.hxx"
+#include <ROOT/RVec.hxx>
 #include "TCanvas.h"
 #include "Math/Vector4D.h"
 
