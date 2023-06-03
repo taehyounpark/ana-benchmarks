@@ -57,34 +57,34 @@ protected:
 void task(int n) {
 
   ana::multithread::enable(n);
-  auto ds = ana::analysis<Tree>({"Run2012B_SingleMu.root"}, "Events");
+  auto df = ana::dataflow<Tree>({"Run2012B_SingleMu.root"}, "Events");
 
-  auto n_jet = ds.read<unsigned int>("nJet");
-  auto jets_pt = ds.read<VecF>("Jet_pt");
-  auto jets_eta = ds.read<VecF>("Jet_eta");
-  auto jets_phi = ds.read<VecF>("Jet_phi");
-  auto jets_m = ds.read<VecF>("Jet_mass");
+  auto n_jet = df.read<unsigned int>("nJet");
+  auto jets_pt = df.read<VecF>("Jet_pt");
+  auto jets_eta = df.read<VecF>("Jet_eta");
+  auto jets_phi = df.read<VecF>("Jet_phi");
+  auto jets_m = df.read<VecF>("Jet_mass");
 
-  auto n_muon = ds.read<unsigned int>("nMuon");
-  auto mus_pt = ds.read<VecF>("Muon_pt");
-  auto mus_eta = ds.read<VecF>("Muon_eta");
-  auto mus_phi = ds.read<VecF>("Muon_phi");
+  auto n_muon = df.read<unsigned int>("nMuon");
+  auto mus_pt = df.read<VecF>("Muon_pt");
+  auto mus_eta = df.read<VecF>("Muon_eta");
+  auto mus_phi = df.read<VecF>("Muon_phi");
 
-  auto n_elec = ds.read<unsigned int>("nElectron");
-  auto els_pt = ds.read<VecF>("Electron_pt");
-  auto els_eta = ds.read<VecF>("Electron_eta");
-  auto els_phi = ds.read<VecF>("Electron_phi");
+  auto n_elec = df.read<unsigned int>("nElectron");
+  auto els_pt = df.read<VecF>("Electron_pt");
+  auto els_eta = df.read<VecF>("Electron_eta");
+  auto els_phi = df.read<VecF>("Electron_phi");
 
-  auto jets_ptcut = ds.define([](VecF const& pts){return pts>30;})(jets_pt);
-  auto jets_mudr  = ds.define<JetLepDRReq>(0.4,10.0)(jets_eta, jets_phi, mus_pt, mus_eta, mus_phi);
-  auto jets_eldr  = ds.define<JetLepDRReq>(0.4,10.0)(jets_eta, jets_phi, els_pt, els_eta, els_phi);
+  auto jets_ptcut = df.define([](VecF const& pts){return pts>30;})(jets_pt);
+  auto jets_mudr  = df.define<JetLepDRReq>(0.4,10.0)(jets_eta, jets_phi, mus_pt, mus_eta, mus_phi);
+  auto jets_eldr  = df.define<JetLepDRReq>(0.4,10.0)(jets_eta, jets_phi, els_pt, els_eta, els_phi);
   auto goodjet_mask    = jets_ptcut && jets_mudr && jets_eldr;
-  auto goodjet_sumpt = ds.define([](VecI const& good, VecF const& pt) { return Sum(pt[good]); })(goodjet_mask, jets_pt);
+  auto goodjet_sumpt = df.define([](VecI const& good, VecF const& pt) { return Sum(pt[good]); })(goodjet_mask, jets_pt);
 
-  auto cut_1jet = ds.filter<cut>("1jet")(n_jet >= ds.constant(1));
+  auto cut_1jet = df.filter<cut>("1jet")(n_jet >= df.constant(1));
   auto cut_goodjet = cut_1jet.filter<cut>("goodjet",[](VecI const& goodjet){return Sum(goodjet);})(goodjet_mask);
 
-  auto goodjet_sumpt_hist = ds.book<Hist<1,float>>("goodjet_sumpt",185,15,200).fill(goodjet_sumpt).at(cut_goodjet);
+  auto goodjet_sumpt_hist = df.book<Hist<1,float>>("goodjet_sumpt",185,15,200).fill(goodjet_sumpt).at(cut_goodjet);
 
   TCanvas c;
   goodjet_sumpt_hist->Draw();

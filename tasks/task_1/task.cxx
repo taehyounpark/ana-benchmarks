@@ -20,10 +20,10 @@ using weight = ana::selection::weight;
 
 void task(int n) {
   ana::multithread::enable(n);
-  auto ds = ana::analysis<Tree>({"Run2012B_SingleMu.root"}, "Events");
-  auto met = ds.read<float>("MET_pt");
-  auto all = ds.filter<cut>("all")(ds.constant(true));
-  auto met_hist = ds.book<Hist<1,float>>("met",100,0,200).fill(met).at(all);
+  auto df = ana::dataflow<Tree>({"Run2012B_SingleMu.root"}, "Events");
+  auto met = df.read<float>("MET_pt");
+  auto all = df.filter<cut>("all",[](){return true;})();
+  auto met_hist = df.book<Hist<1,float>>("met",100,0,200).fill(met).at(all);
   TCanvas c;
   met_hist->Draw();
   c.SaveAs("task_1.pdf");

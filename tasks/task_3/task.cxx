@@ -19,15 +19,15 @@ using VecD = Vec<double>;
 
 void task(int n) {
   ana::multithread::enable(n);
-  auto ds = ana::analysis<Tree>({"Run2012B_SingleMu.root"}, "Events");
-  auto n_jet = ds.read<unsigned int>("nJet");
-  auto jets_pt = ds.read<VecF>("Jet_pt");
-  auto jets_eta = ds.read<VecF>("Jet_eta");
-  auto jets_phi = ds.read<VecF>("Jet_phi");
-  auto jets_m = ds.read<VecF>("Jet_mass");
-  auto jets_pt_sel = jets_pt[jets_eta > ds.constant(-1.0) && jets_eta < ds.constant(1.0)];
-  auto all = ds.filter<cut>("all")(ds.constant(true));
-  auto jets_pt_hist = ds.book<Hist<1,VecF>>("jets_pt",45,15,60).fill(jets_pt_sel).at(all);
+  auto df = ana::dataflow<Tree>({"Run2012B_SingleMu.root"}, "Events");
+  auto n_jet = df.read<unsigned int>("nJet");
+  auto jets_pt = df.read<VecF>("Jet_pt");
+  auto jets_eta = df.read<VecF>("Jet_eta");
+  auto jets_phi = df.read<VecF>("Jet_phi");
+  auto jets_m = df.read<VecF>("Jet_mass");
+  auto jets_pt_sel = jets_pt[jets_eta > df.constant(-1.0) && jets_eta < df.constant(1.0)];
+  auto all = df.filter<cut>("all")(df.constant(true));
+  auto jets_pt_hist = df.book<Hist<1,VecF>>("jets_pt",45,15,60).fill(jets_pt_sel).at(all);
   TCanvas c;
   jets_pt_hist->Draw();
   c.SaveAs("task_3.pdf");

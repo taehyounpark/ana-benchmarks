@@ -18,13 +18,13 @@ using weight = ana::selection::weight;
 
 void task(int n) {
   ana::multithread::enable(n);
-  auto ds = ana::analysis<Tree>({"Run2012B_SingleMu.root"}, "Events");
-  auto met = ds.read<float>("MET_pt");
-  auto jets_pt = ds.read<VecF>("Jet_pt");
-  auto jets_eta = ds.read<VecF>("Jet_eta");
-  auto njets_pt40 = ds.define([](VecF const& jets_pt){return jets_pt[jets_pt > 40.0].size();})(jets_pt);
-  auto cut_2jets = ds.filter<cut>("2jets")(njets_pt40 >= ds.constant(2));
-  auto met_hist = ds.book<Hist<1,float>>("met",100,0,200).fill(met).at(cut_2jets);
+  auto df = ana::dataflow<Tree>({"Run2012B_SingleMu.root"}, "Events");
+  auto met = df.read<float>("MET_pt");
+  auto jets_pt = df.read<VecF>("Jet_pt");
+  auto jets_eta = df.read<VecF>("Jet_eta");
+  auto njets_pt40 = df.define([](VecF const& jets_pt){return jets_pt[jets_pt > 40.0].size();})(jets_pt);
+  auto cut_2jets = df.filter<cut>("2jets")(njets_pt40 >= df.constant(2));
+  auto met_hist = df.book<Hist<1,float>>("met",100,0,200).fill(met).at(cut_2jets);
   TCanvas c;
   met_hist->Draw();
   c.SaveAs("task_4.pdf");

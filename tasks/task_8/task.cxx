@@ -73,38 +73,38 @@ unsigned int additional_lepton_idx(Vec<float> const& pt, Vec<float> const& eta, 
 void task(int n) {
 
   ana::multithread::enable(n);
-  auto ds = ana::analysis<Tree>({"Run2012B_SingleMu.root"}, "Events");
+  auto df = ana::dataflow<Tree>({"Run2012B_SingleMu.root"}, "Events");
 
-  auto n_muon = ds.read<unsigned int>("nMuon");
-  auto mus_pt = ds.read<VecF>("Muon_pt");
-  auto mus_eta = ds.read<VecF>("Muon_eta");
-  auto mus_phi = ds.read<VecF>("Muon_phi");
-  auto mus_m = ds.read<VecF>("Muon_mass");
-  auto mus_q = ds.read<VecI>("Muon_charge");
+  auto n_muon = df.read<unsigned int>("nMuon");
+  auto mus_pt = df.read<VecF>("Muon_pt");
+  auto mus_eta = df.read<VecF>("Muon_eta");
+  auto mus_phi = df.read<VecF>("Muon_phi");
+  auto mus_m = df.read<VecF>("Muon_mass");
+  auto mus_q = df.read<VecI>("Muon_charge");
 
-  auto n_elec = ds.read<unsigned int>("nElectron");
-  auto els_pt = ds.read<VecF>("Electron_pt");
-  auto els_eta = ds.read<VecF>("Electron_eta");
-  auto els_phi = ds.read<VecF>("Electron_phi");
-  auto els_m = ds.read<VecF>("Electron_mass");
-  auto els_q = ds.read<VecI>("Electron_charge");
+  auto n_elec = df.read<unsigned int>("nElectron");
+  auto els_pt = df.read<VecF>("Electron_pt");
+  auto els_eta = df.read<VecF>("Electron_eta");
+  auto els_phi = df.read<VecF>("Electron_phi");
+  auto els_m = df.read<VecF>("Electron_mass");
+  auto els_q = df.read<VecI>("Electron_charge");
 
-  auto met_pt = ds.read<float>("MET_pt");
-  auto met_phi = ds.read<float>("MET_phi");
+  auto met_pt = df.read<float>("MET_pt");
+  auto met_phi = df.read<float>("MET_phi");
 
-  auto leps_pt = ds.define(concatf)(mus_pt, els_pt);
-  auto leps_eta = ds.define(concatf)(mus_eta, els_eta);
-  auto leps_phi = ds.define(concatf)(mus_phi, els_phi);
-  auto leps_m = ds.define(concatf)(mus_m, els_m);
-  auto leps_q = ds.define(concati)(mus_q, els_q);
-  auto leps_type = ds.define(lepton_flavour)(n_muon, n_elec);
+  auto leps_pt = df.define(concatf)(mus_pt, els_pt);
+  auto leps_eta = df.define(concatf)(mus_eta, els_eta);
+  auto leps_phi = df.define(concatf)(mus_phi, els_phi);
+  auto leps_m = df.define(concatf)(mus_m, els_m);
+  auto leps_q = df.define(concati)(mus_q, els_q);
+  auto leps_type = df.define(lepton_flavour)(n_muon, n_elec);
 
-  auto add_lep_idx = ds.define(std::function(additional_lepton_idx))(leps_pt, leps_eta, leps_phi, leps_m, leps_q, leps_type);
-  auto mt = ds.define(transverse_mass)(leps_pt, leps_phi, met_pt, met_phi, add_lep_idx);
+  auto add_lep_idx = df.define(std::function(additional_lepton_idx))(leps_pt, leps_eta, leps_phi, leps_m, leps_q, leps_type);
+  auto mt = df.define(transverse_mass)(leps_pt, leps_phi, met_pt, met_phi, add_lep_idx);
 
-  auto cut_3l_sfos = ds.filter<cut>("3lep")((n_muon + n_elec) >= ds.constant(3)).filter<cut>("sfos")(add_lep_idx != ds.constant(PLACEHOLDER_VALUE));
+  auto cut_3l_sfos = df.filter<cut>("3lep")((n_muon + n_elec) >= df.constant(3)).filter<cut>("sfos")(add_lep_idx != df.constant(PLACEHOLDER_VALUE));
 
-  auto mt_hist = ds.book<Hist<1,float>>("mt",100,0,200).fill(mt).at(cut_3l_sfos);
+  auto mt_hist = df.book<Hist<1,float>>("mt",100,0,200).fill(mt).at(cut_3l_sfos);
 
   TCanvas c;
   mt_hist->Draw();

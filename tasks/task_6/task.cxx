@@ -71,30 +71,30 @@ using weight = ana::selection::weight;
 void task(int n) {
 
   ana::multithread::enable(n);
-  auto ds = ana::analysis<Tree>({"Run2012B_SingleMu.root"}, "Events");
+  auto df = ana::dataflow<Tree>({"Run2012B_SingleMu.root"}, "Events");
 
-  auto njets = ds.read<unsigned int>("nJet");
-  auto jets_pt = ds.read<VecF>("Jet_pt");
-  auto jets_eta = ds.read<VecF>("Jet_eta");
-  auto jets_phi = ds.read<VecF>("Jet_phi");
-  auto jets_m = ds.read<VecF>("Jet_mass");
-  auto jets_btag = ds.read<VecF>("Jet_btag");
+  auto njets = df.read<unsigned int>("nJet");
+  auto jets_pt = df.read<VecF>("Jet_pt");
+  auto jets_eta = df.read<VecF>("Jet_eta");
+  auto jets_phi = df.read<VecF>("Jet_phi");
+  auto jets_m = df.read<VecF>("Jet_mass");
+  auto jets_btag = df.read<VecF>("Jet_btag");
 
-  auto cut_3jets = ds.filter<cut>("3jets")(njets >= ds.constant(3));
+  auto cut_3jets = df.filter<cut>("3jets")(njets >= df.constant(3));
 
-  auto jets_p4 = ds.define([](VecF const& pts, VecF const& etas, VecF const& phis, VecF const& ms){
+  auto jets_p4 = df.define([](VecF const& pts, VecF const& etas, VecF const& phis, VecF const& ms){
     Vec<P4> p4s;
     for (size_t i=0 ; i<pts.size(); ++i) {
       p4s.emplace_back(pts[i],etas[i],phis[i],ms[i]);
     }
     return p4s;
   })(jets_pt, jets_eta, jets_phi, jets_m);
-  auto top_trijet = ds.define<TopTriJet>(172.5)(jets_p4);
-  auto trijet_pt = ds.define(std::function(get_trijet_pt))(jets_p4, top_trijet);
-  auto trijet_maxbtag = ds.define(std::function(get_trijet_maxval))(jets_btag, top_trijet);
+  auto top_trijet = df.define<TopTriJet>(172.5)(jets_p4);
+  auto trijet_pt = df.define(std::function(get_trijet_pt))(jets_p4, top_trijet);
+  auto trijet_maxbtag = df.define(std::function(get_trijet_maxval))(jets_btag, top_trijet);
 
-  auto trijet_pt_hist = ds.book<Hist<1,float>>("trijet_pt",100,15,40).fill(trijet_pt).at(cut_3jets);
-  auto trijet_maxbtag_hist = ds.book<Hist<1,float>>("trijet_maxbtag",100,0,1).fill(trijet_maxbtag).at(cut_3jets);
+  auto trijet_pt_hist = df.book<Hist<1,float>>("trijet_pt",100,15,40).fill(trijet_pt).at(cut_3jets);
+  auto trijet_maxbtag_hist = df.book<Hist<1,float>>("trijet_maxbtag",100,0,1).fill(trijet_maxbtag).at(cut_3jets);
   
   TCanvas c;
   c.Divide(2,1);

@@ -39,22 +39,22 @@ public:
 
 void task(int n) {
   ana::multithread::enable(n);
-  auto ds = ana::analysis<Tree>({"Run2012B_SingleMu.root"}, "Events");
-  auto met = ds.read<float>("MET_pt");
-  auto nmuons = ds.read<unsigned int>("nMuon");
-  auto muons_pt = ds.read<VecF>("Muon_pt");
-  auto muons_eta = ds.read<VecF>("Muon_eta");
-  auto muons_phi = ds.read<VecF>("Muon_phi");
-  auto muons_m = ds.read<VecF>("Muon_mass");
-  auto muons_q = ds.read<VecI>("Muon_charge");
-  auto dimuons_m = ds.define<dimuon_invariant_masses>()(muons_pt,muons_eta,muons_phi,muons_m,muons_q);
+  auto df = ana::dataflow<Tree>({"Run2012B_SingleMu.root"}, "Events");
+  auto met = df.read<float>("MET_pt");
+  auto nmuons = df.read<unsigned int>("nMuon");
+  auto muons_pt = df.read<VecF>("Muon_pt");
+  auto muons_eta = df.read<VecF>("Muon_eta");
+  auto muons_phi = df.read<VecF>("Muon_phi");
+  auto muons_m = df.read<VecF>("Muon_mass");
+  auto muons_q = df.read<VecI>("Muon_charge");
+  auto dimuons_m = df.define<dimuon_invariant_masses>()(muons_pt,muons_eta,muons_phi,muons_m,muons_q);
 
   // require 2 muons beforehand to ensure combinatorics can work
-  auto cut_dimuon = ds.filter<cut>("dimuon")(nmuons >= ds.constant(2));
+  auto cut_dimuon = df.filter<cut>("dimuon")(nmuons >= df.constant(2));
   // do the combinatorics
   auto cut_dimuon_os_60m120 = cut_dimuon.filter<cut>("dimuon_os_60m120",[](VecF const& dimuons_m){return Sum(dimuons_m > 60 && dimuons_m < 120) > 0;})(dimuons_m);
 
-  auto met_hist = ds.book<Hist<1,float>>("met",100,0,200).fill(met).at(cut_dimuon_os_60m120);
+  auto met_hist = df.book<Hist<1,float>>("met",100,0,200).fill(met).at(cut_dimuon_os_60m120);
   TCanvas c;
   met_hist->Draw();
   c.SaveAs("task_5.pdf");

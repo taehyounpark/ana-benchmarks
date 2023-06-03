@@ -19,10 +19,10 @@ using weight = ana::selection::weight;
 
 void task(int n) {
   ana::multithread::enable(n);
-  auto ds = ana::analysis<Tree>({"Run2012B_SingleMu.root"}, "Events");
-  auto jets_pt = ds.read<VecF>("Jet_pt");
-  auto all = ds.filter<cut>("all")(ds.constant(true));
-  auto jets_pt_hist = ds.book<Hist<1,VecF>>("jets_pt",45,15,60).fill(jets_pt).at(all);
+  auto df = ana::dataflow<Tree>({"Run2012B_SingleMu.root"}, "Events");
+  auto jets_pt = df.read<VecF>("Jet_pt");
+  auto all = df.filter<cut>("all")(df.constant(true));
+  auto jets_pt_hist = df.book<Hist<1,VecF>>("jets_pt",45,15,60).fill(jets_pt).at(all);
   TCanvas c;
   jets_pt_hist->Draw();
   c.SaveAs("task_2.pdf");
