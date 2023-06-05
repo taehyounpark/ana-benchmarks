@@ -23,11 +23,11 @@ void task(int n) {
   auto jets_pt = df.read<VecF>("Jet_pt");
   auto jets_eta = df.read<VecF>("Jet_eta");
   auto njets_pt40 = df.define([](VecF const& jets_pt){return jets_pt[jets_pt > 40.0].size();})(jets_pt);
-  auto cut_2jets = df.filter<cut>("2jets")(njets_pt40 >= df.constant(2));
+  auto cut_2jets = df.filter<cut>("2jets")(njets_pt40 >= df.constant<unsigned int>(2));
   auto met_hist = df.book<Hist<1,float>>("met",100,0,200).fill(met).at(cut_2jets);
   TCanvas c;
   met_hist->Draw();
-  c.SaveAs("task_4.pdf");
+  c.SaveAs("task_4.png");
 }
 
 int main(int argc, char **argv) {

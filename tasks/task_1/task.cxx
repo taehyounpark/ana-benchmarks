@@ -26,7 +26,7 @@ void task(int n) {
   auto met_hist = df.book<Hist<1,float>>("met",100,0,200).fill(met).at(all);
   TCanvas c;
   met_hist->Draw();
-  c.SaveAs("task_1.pdf");
+  c.SaveAs("task_1.png");
 }
 
 int main(int argc, char **argv) {

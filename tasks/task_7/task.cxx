@@ -88,7 +88,7 @@ void task(int n) {
 
   TCanvas c;
   goodjet_sumpt_hist->Draw();
-  c.SaveAs("task_7.pdf");
+  c.SaveAs("task_7.png");
 }
 
 int main(int argc, char **argv) {

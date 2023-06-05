@@ -17,16 +17,17 @@ using VecUI = Vec<unsigned int>;
 using VecI = Vec<int>;
 using VecF = Vec<float>;
 using VecD = Vec<double>;
-using P4 = ROOT::Math::PtEtaPhiMVector;
+using PtEtaPhiMVector = ROOT::Math::PtEtaPhiMVector;
+using XYZTVector = ROOT::Math::XYZTVector;
 
-class TopTriJet : public ana::column::definition<Vec<std::size_t>(Vec<P4>)>
+class TopTriJet : public ana::column::definition<Vec<std::size_t>(Vec<XYZTVector>)>
 {
 public:
   TopTriJet(float top_mass) : m_top_mass(top_mass) {};
-  virtual Vec<std::size_t> evaluate(ana::observable<Vec<P4>> jets_p4) const override
+  virtual Vec<std::size_t> evaluate(ana::observable<Vec<XYZTVector>> jets_p4) const override
   {
     constexpr std::size_t n = 3;
-    float distance = -1.0;
+    float distance = 1e9;
     std::size_t idx1 = 0, idx2 = 1, idx3 = 2;
     for (std::size_t i = 0; i <= jets_p4->size() - n; ++i) {
       auto p1 = (*jets_p4)[i];
@@ -36,7 +37,7 @@ public:
           auto p3 = (*jets_p4)[k];
           const auto candidate_mass = (p1 + p2 + p3).mass();
           const auto candidate_distance = std::abs(candidate_mass - m_top_mass);
-          if (distance<0 || candidate_distance < distance) {
+          if (candidate_distance < distance) {
             distance = candidate_distance;
             idx1 = i;
             idx2 = j;
@@ -51,19 +52,18 @@ protected:
   const float m_top_mass;
 };
 
-float get_trijet_pt(Vec<P4> const& p4s, Vec<std::size_t> const& idx)
+auto get_trijet_pt = [](Vec<float> const& pt, Vec<float> const& eta, Vec<float> const& phi, Vec<float> const& mass, Vec<std::size_t> const& idx) -> float
 {
-  return (p4s[idx[0]] + p4s[idx[1]] + p4s[idx[2]]).pt();
-}
+  const auto p1 = ROOT::Math::PtEtaPhiMVector(pt[idx[0]], eta[idx[0]], phi[idx[0]], mass[idx[0]]);
+  const auto p2 = ROOT::Math::PtEtaPhiMVector(pt[idx[1]], eta[idx[1]], phi[idx[1]], mass[idx[1]]);
+  const auto p3 = ROOT::Math::PtEtaPhiMVector(pt[idx[2]], eta[idx[2]], phi[idx[2]], mass[idx[2]]);
+  return (p1 + p2 + p3).pt();
+};
 
-float get_trijet_maxval(Vec<float> const& vals, Vec<std::size_t> const& idx)
+auto get_trijet_maxval = [](Vec<float> const& vals, Vec<std::size_t> const& idx) -> float
 {
-  auto trijet_vals = std::vector<float>(3,0);
-  trijet_vals[0] = vals[idx[0]];
-  trijet_vals[1] = vals[idx[1]];
-  trijet_vals[2] = vals[idx[2]];
-  return *std::max_element(trijet_vals.begin(), trijet_vals.end());
-}
+  Max(Take(vals, idx));
+};
 
 using cut = ana::selection::cut;
 using weight = ana::selection::weight;
@@ -82,15 +82,10 @@ void task(int n) {
 
   auto cut_3jets = df.filter<cut>("3jets")(njets >= df.constant(3));
 
-  auto jets_p4 = df.define([](VecF const& pts, VecF const& etas, VecF const& phis, VecF const& ms){
-    Vec<P4> p4s;
-    for (size_t i=0 ; i<pts.size(); ++i) {
-      p4s.emplace_back(pts[i],etas[i],phis[i],ms[i]);
-    }
-    return p4s;
-  })(jets_pt, jets_eta, jets_phi, jets_m);
+  auto jets_p4 = df.define([](Vec<float> pt, Vec<float> eta, Vec<float> phi, Vec<float> m) {
+                              return Construct<XYZTVector>(Construct<PtEtaPhiMVector>(pt, eta, phi, m));})(jets_pt, jets_eta, jets_phi, jets_m);
   auto top_trijet = df.define<TopTriJet>(172.5)(jets_p4);
-  auto trijet_pt = df.define(std::function(get_trijet_pt))(jets_p4, top_trijet);
+  auto trijet_pt = df.define(get_trijet_pt)(jets_pt, jets_eta, jets_phi, jets_m, top_trijet);
   auto trijet_maxbtag = df.define(std::function(get_trijet_maxval))(jets_btag, top_trijet);
 
   auto trijet_pt_hist = df.book<Hist<1,float>>("trijet_pt",100,15,40).fill(trijet_pt).at(cut_3jets);
@@ -102,7 +97,7 @@ void task(int n) {
   trijet_pt_hist->Draw();
   c.cd(2);
   trijet_maxbtag_hist->Draw();
-  c.SaveAs("task_6.pdf");
+  c.SaveAs("task_6.png");
 }
 
 int main(int argc, char **argv) {

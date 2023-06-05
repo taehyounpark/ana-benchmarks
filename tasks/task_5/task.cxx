@@ -50,14 +50,14 @@ void task(int n) {
   auto dimuons_m = df.define<dimuon_invariant_masses>()(muons_pt,muons_eta,muons_phi,muons_m,muons_q);
 
   // require 2 muons beforehand to ensure combinatorics can work
-  auto cut_dimuon = df.filter<cut>("dimuon")(nmuons >= df.constant(2));
+  auto cut_dimuon = df.filter<cut>("dimuon")(nmuons >= df.constant<unsigned int>(2));
   // do the combinatorics
   auto cut_dimuon_os_60m120 = cut_dimuon.filter<cut>("dimuon_os_60m120",[](VecF const& dimuons_m){return Sum(dimuons_m > 60 && dimuons_m < 120) > 0;})(dimuons_m);
 
   auto met_hist = df.book<Hist<1,float>>("met",100,0,200).fill(met).at(cut_dimuon_os_60m120);
   TCanvas c;
   met_hist->Draw();
-  c.SaveAs("task_5.pdf");
+  c.SaveAs("task_5.png");
 }
 
 int main(int argc, char **argv) {

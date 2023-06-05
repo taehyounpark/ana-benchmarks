@@ -108,7 +108,7 @@ void task(int n) {
 
   TCanvas c;
   mt_hist->Draw();
-  c.SaveAs("task_8.pdf");
+  c.SaveAs("task_8.png");
 }
 
 int main(int argc, char **argv) {

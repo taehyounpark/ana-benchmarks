@@ -25,7 +25,7 @@ void task(int n) {
   auto jets_pt_hist = df.book<Hist<1,VecF>>("jets_pt",45,15,60).fill(jets_pt).at(all);
   TCanvas c;
   jets_pt_hist->Draw();
-  c.SaveAs("task_2.pdf");
+  c.SaveAs("task_2.png");
 }
 
 int main(int argc, char **argv) {

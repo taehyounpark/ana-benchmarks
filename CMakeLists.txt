@@ -6,6 +6,7 @@ add_subdirectory(ana/)
 add_subdirectory(rootana/)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+set(CMAKE_CXX_FLAGS "-O3 -Wall -Wextra")
 
 add_executable(task_1 tasks/task_1/task.cxx)
 target_compile_features(task_1 PRIVATE cxx_std_17)
