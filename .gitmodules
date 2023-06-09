@@ -1,6 +1,6 @@
-[submodule "ana"]
-	path = ana
-	url = git@github.com:taehyounpark/ana.git
-[submodule "rootana"]
-	path = rootana
-	url = git@github.com:taehyounpark/rootana.git
+[submodule "analogical"]
+	path = analogical
+	url = git@github.com:taehyounpark/analogical.git
+[submodule "analogicla-root-plugins"]
+	path = analogical-root-plugins
+	url = git@github.com:taehyounpark/analogical-root-plugins.git
