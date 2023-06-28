@@ -8,8 +8,8 @@
 #include <ROOT/RVec.hxx>
 #include "TCanvas.h"
 
-#include "rootana/Tree.h"
-#include "rootana/Hist.h"
+#include "root-analysis-plugins/Tree.h"
+#include "root-analysis-plugins/Hist.h"
 
 using cut = ana::selection::cut;
 using weight = ana::selection::weight;
@@ -57,7 +57,7 @@ protected:
 void task(int n) {
 
   ana::multithread::enable(n);
-  auto df = ana::dataflow<Tree>({"Run2012B_SingleMu.root"}, "Events");
+  auto df = ana::dataframe<Tree>({"Run2012B_SingleMu.root"}, "Events");
 
   auto n_jet = df.read<unsigned int>("nJet");
   auto jets_pt = df.read<VecF>("Jet_pt");

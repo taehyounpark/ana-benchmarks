@@ -9,8 +9,8 @@
 #include "TCanvas.h"
 #include "Math/Vector4D.h"
 
-#include "rootana/Tree.h"
-#include "rootana/Hist.h"
+#include "root-analysis-plugins/Tree.h"
+#include "root-analysis-plugins/Hist.h"
 
 template <typename T> using Vec = ROOT::RVec<T>;
 using VecUI = Vec<unsigned int>;
@@ -73,7 +73,7 @@ unsigned int additional_lepton_idx(Vec<float> const& pt, Vec<float> const& eta, 
 void task(int n) {
 
   ana::multithread::enable(n);
-  auto df = ana::dataflow<Tree>({"Run2012B_SingleMu.root"}, "Events");
+  auto df = ana::dataframe<Tree>({"Run2012B_SingleMu.root"}, "Events");
 
   auto n_muon = df.read<unsigned int>("nMuon");
   auto mus_pt = df.read<VecF>("Muon_pt");

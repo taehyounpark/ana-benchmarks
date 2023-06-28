@@ -9,8 +9,8 @@
 #include "Math/Vector4D.h"
 #include "ROOT/RVec.hxx"
 
-#include "rootana/Tree.h"
-#include "rootana/Hist.h"
+#include "root-analysis-plugins/Tree.h"
+#include "root-analysis-plugins/Hist.h"
 
 template <typename T> using Vec = ROOT::RVec<T>;
 using VecUI = Vec<unsigned int>;
@@ -71,7 +71,7 @@ using weight = ana::selection::weight;
 void task(int n) {
 
   ana::multithread::enable(n);
-  auto df = ana::dataflow<Tree>({"Run2012B_SingleMu.root"}, "Events");
+  auto df = ana::dataframe<Tree>({"Run2012B_SingleMu.root"}, "Events");
 
   auto njets = df.read<unsigned int>("nJet");
   auto jets_pt = df.read<VecF>("Jet_pt");

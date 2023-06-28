@@ -1,6 +1,6 @@
 [submodule "analogical"]
 	path = analogical
 	url = git@github.com:taehyounpark/analogical.git
-[submodule "analogicla-root-plugins"]
-	path = analogical-root-plugins
-	url = git@github.com:taehyounpark/analogical-root-plugins.git
+[submodule "root-analysis-plugins"]
+	path = root-analysis-plugins
+	url = git@github.com:taehyounpark/root-analysis-plugins.git

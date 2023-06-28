@@ -5,8 +5,8 @@
 #include <ROOT/RVec.hxx>
 #include "TCanvas.h"
 
-#include "rootana/Tree.h"
-#include "rootana/Hist.h"
+#include "root-analysis-plugins/Tree.h"
+#include "root-analysis-plugins/Hist.h"
 
 template <typename T>
 using Vec = ROOT::RVec<T>;
@@ -20,7 +20,7 @@ using weight = ana::selection::weight;
 
 void task(int n) {
   ana::multithread::enable(n);
-  auto df = ana::dataflow<Tree>({"Run2012B_SingleMu.root"}, "Events");
+  auto df = ana::dataframe<Tree>({"Run2012B_SingleMu.root"}, "Events");
   auto met = df.read<float>("MET_pt");
   auto all = df.filter<cut>("all",[](){return true;})();
   auto met_hist = df.book<Hist<1,float>>("met",100,0,200).fill(met).at(all);

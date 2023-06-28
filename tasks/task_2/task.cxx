@@ -4,8 +4,8 @@
 #include <ROOT/RVec.hxx>
 #include "TCanvas.h"
 
-#include "rootana/Tree.h"
-#include "rootana/Hist.h"
+#include "root-analysis-plugins/Tree.h"
+#include "root-analysis-plugins/Hist.h"
 
 template <typename T>
 using Vec = ROOT::RVec<T>;
@@ -19,7 +19,7 @@ using weight = ana::selection::weight;
 
 void task(int n) {
   ana::multithread::enable(n);
-  auto df = ana::dataflow<Tree>({"Run2012B_SingleMu.root"}, "Events");
+  auto df = ana::dataframe<Tree>({"Run2012B_SingleMu.root"}, "Events");
   auto jets_pt = df.read<VecF>("Jet_pt");
   auto all = df.filter<cut>("all")(df.constant(true));
   auto jets_pt_hist = df.book<Hist<1,VecF>>("jets_pt",45,15,60).fill(jets_pt).at(all);
