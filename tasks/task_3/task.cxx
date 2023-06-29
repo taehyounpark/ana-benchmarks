@@ -5,8 +5,8 @@
 #include <ROOT/RVec.hxx>
 #include "TCanvas.h"
 
-#include "root-analysis-plugins/Tree.h"
-#include "root-analysis-plugins/Hist.h"
+#include "AnalysisPlugins/Tree.h"
+#include "AnalysisPlugins/Hist.h"
 
 using cut = ana::selection::cut;
 using weight = ana::selection::weight;
@@ -19,7 +19,7 @@ using VecD = Vec<double>;
 
 void task(int n) {
   ana::multithread::enable(n);
-  auto df = ana::dataframe<Tree>({"Run2012B_SingleMu.root"}, "Events");
+  auto df = ana::dataflow<Tree>({"Run2012B_SingleMu.root"}, "Events");
   auto n_jet = df.read<unsigned int>("nJet");
   auto jets_pt = df.read<VecF>("Jet_pt");
   auto jets_eta = df.read<VecF>("Jet_eta");

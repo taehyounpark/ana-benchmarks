@@ -4,8 +4,8 @@
 #include "ROOT/RVec.hxx"
 #include "Math/Vector4D.h"
 
-#include "root-analysis-plugins/Tree.h"
-#include "root-analysis-plugins/Hist.h"
+#include "AnalysisPlugins/Tree.h"
+#include "AnalysisPlugins/Hist.h"
 
 template <typename T>
 using Vec = ROOT::RVec<T>;
@@ -39,7 +39,7 @@ public:
 
 void task(int n) {
   ana::multithread::enable(n);
-  auto df = ana::dataframe<Tree>({"Run2012B_SingleMu.root"}, "Events");
+  auto df = ana::dataflow<Tree>({"Run2012B_SingleMu.root"}, "Events");
   auto met = df.read<float>("MET_pt");
   auto nmuons = df.read<unsigned int>("nMuon");
   auto muons_pt = df.read<VecF>("Muon_pt");

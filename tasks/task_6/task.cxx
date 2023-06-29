@@ -9,8 +9,8 @@
 #include "Math/Vector4D.h"
 #include "ROOT/RVec.hxx"
 
-#include "root-analysis-plugins/Tree.h"
-#include "root-analysis-plugins/Hist.h"
+#include "AnalysisPlugins/Tree.h"
+#include "AnalysisPlugins/Hist.h"
 
 template <typename T> using Vec = ROOT::RVec<T>;
 using VecUI = Vec<unsigned int>;
@@ -71,7 +71,7 @@ using weight = ana::selection::weight;
 void task(int n) {
 
   ana::multithread::enable(n);
-  auto df = ana::dataframe<Tree>({"Run2012B_SingleMu.root"}, "Events");
+  auto df = ana::dataflow<Tree>({"Run2012B_SingleMu.root"}, "Events");
 
   auto njets = df.read<unsigned int>("nJet");
   auto jets_pt = df.read<VecF>("Jet_pt");
@@ -83,7 +83,7 @@ void task(int n) {
   auto cut_3jets = df.filter<cut>("3jets")(njets >= df.constant(3));
 
   auto jets_p4 = df.define([](Vec<float> pt, Vec<float> eta, Vec<float> phi, Vec<float> m) {
-                              return Construct<XYZTVector>(Construct<PtEtaPhiMVector>(pt, eta, phi, m));})(jets_pt, jets_eta, jets_phi, jets_m);
+                              return ROOT::VecOps::Construct<XYZTVector>(ROOT::VecOps::Construct<PtEtaPhiMVector>(pt, eta, phi, m));})(jets_pt, jets_eta, jets_phi, jets_m);
   auto top_trijet = df.define<TopTriJet>(172.5)(jets_p4);
   auto trijet_pt = df.define(get_trijet_pt)(jets_pt, jets_eta, jets_phi, jets_m, top_trijet);
   auto trijet_maxbtag = df.define(std::function(get_trijet_maxval))(jets_btag, top_trijet);
