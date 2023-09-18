@@ -62,7 +62,7 @@ auto get_trijet_pt = [](Vec<float> const& pt, Vec<float> const& eta, Vec<float> 
 
 auto get_trijet_maxval = [](Vec<float> const& vals, Vec<std::size_t> const& idx) -> float
 {
-  Max(Take(vals, idx));
+  return Max(Take(vals, idx));
 };
 
 using cut = ana::selection::cut;
