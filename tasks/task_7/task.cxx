@@ -3,7 +3,7 @@
 #include <algorithm>
 #include <functional>
 
-#include "ana/analysis.h"
+#include "ana/analogical.h"
 
 #include <ROOT/RVec.hxx>
 #include "TCanvas.h"
@@ -81,7 +81,7 @@ void task(int n) {
   auto goodjet_mask    = jets_ptcut && jets_mudr && jets_eldr;
   auto goodjet_sumpt = df.define([](VecI const& good, VecF const& pt) { return Sum(pt[good]); })(goodjet_mask, jets_pt);
 
-  auto cut_1jet = df.filter<cut>("1jet")(n_jet >= df.constant(1));
+  auto cut_1jet = df.filter<cut>("1jet")(n_jet >= df.constant<unsigned int>(1));
   auto cut_goodjet = cut_1jet.filter<cut>("goodjet",[](VecI const& goodjet){return Sum(goodjet);})(goodjet_mask);
 
   auto goodjet_sumpt_hist = df.book<Hist<1,float>>("goodjet_sumpt",185,15,200).fill(goodjet_sumpt).at(cut_goodjet);

@@ -3,7 +3,7 @@
 #include <algorithm>
 #include <functional>
 
-#include "ana/analysis.h"
+#include "ana/analogical.h"
 
 #include <ROOT/RVec.hxx>
 #include "TCanvas.h"
@@ -102,7 +102,7 @@ void task(int n) {
   auto add_lep_idx = df.define(std::function(additional_lepton_idx))(leps_pt, leps_eta, leps_phi, leps_m, leps_q, leps_type);
   auto mt = df.define(transverse_mass)(leps_pt, leps_phi, met_pt, met_phi, add_lep_idx);
 
-  auto cut_3l_sfos = df.filter<cut>("3lep")((n_muon + n_elec) >= df.constant(3)).filter<cut>("sfos")(add_lep_idx != df.constant(PLACEHOLDER_VALUE));
+  auto cut_3l_sfos = df.filter<cut>("3lep")((n_muon + n_elec) >= df.constant<unsigned int>(3)).filter<cut>("sfos")(add_lep_idx != df.constant(PLACEHOLDER_VALUE));
 
   auto mt_hist = df.book<Hist<1,float>>("mt",100,0,200).fill(mt).at(cut_3l_sfos);
 
