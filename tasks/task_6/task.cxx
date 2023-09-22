@@ -80,7 +80,7 @@ void task(int n) {
   auto jets_m = df.read<VecF>("Jet_mass");
   auto jets_btag = df.read<VecF>("Jet_btag");
 
-  auto cut_3jets = df.filter<cut>("3jets")(njets >= df.constant(3));
+  auto cut_3jets = df.filter<cut>("3jets")(njets >= df.constant<unsigned int>(3));
 
   auto jets_p4 = df.define([](Vec<float> pt, Vec<float> eta, Vec<float> phi, Vec<float> m) {
                               return ROOT::VecOps::Construct<XYZTVector>(ROOT::VecOps::Construct<PtEtaPhiMVector>(pt, eta, phi, m));})(jets_pt, jets_eta, jets_phi, jets_m);
