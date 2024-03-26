@@ -1,30 +1,38 @@
-#include <cstdlib>
-#include <chrono>
-#include <algorithm>
-#include <functional>
-
-#include "ana/analogical.h"
+#include "qhep/Tree.h"
+#include "qhep/Hist.h"
 
 #include "TCanvas.h"
 #include "Math/Vector4D.h"
 #include "ROOT/RVec.hxx"
 
-#include "AnalysisPlugins/Tree.h"
-#include "AnalysisPlugins/Hist.h"
+using XYZTVector = ROOT::Math::XYZTVector;
+using PtEtaPhiMVector = ROOT::Math::PtEtaPhiMVector;
 
 template <typename T> using Vec = ROOT::RVec<T>;
 using VecUI = Vec<unsigned int>;
 using VecI = Vec<int>;
 using VecF = Vec<float>;
 using VecD = Vec<double>;
-using PtEtaPhiMVector = ROOT::Math::PtEtaPhiMVector;
-using XYZTVector = ROOT::Math::XYZTVector;
 
-class TopTriJet : public ana::column::definition<Vec<std::size_t>(Vec<XYZTVector>)>
+#include "queryosity/queryosity.h"
+
+using dataflow = queryosity::dataflow;
+namespace multithread = queryosity::multithread;
+namespace dataset = queryosity::dataset;
+namespace column = queryosity::column;
+namespace query = queryosity::query;
+namespace systematic = queryosity::systematic;
+
+#include <chrono>
+#include <functional>
+#include <algorithm>
+#include <cstdlib>
+
+class TopTriJet : public column::definition<Vec<std::size_t>(Vec<XYZTVector>)>
 {
 public:
   TopTriJet(float top_mass) : m_top_mass(top_mass) {};
-  virtual Vec<std::size_t> evaluate(ana::observable<Vec<XYZTVector>> jets_p4) const override
+  virtual Vec<std::size_t> evaluate(column::observable<Vec<XYZTVector>> jets_p4) const override
   {
     constexpr std::size_t n = 3;
     float distance = 1e9;
@@ -65,31 +73,31 @@ auto get_trijet_maxval = [](Vec<float> const& vals, Vec<std::size_t> const& idx)
   return Max(Take(vals, idx));
 };
 
-using cut = ana::selection::cut;
-using weight = ana::selection::weight;
-
 void task(int n) {
+  dataflow df(multithread::enable(n));
 
-  ana::multithread::enable(n);
-  auto df = ana::dataflow<Tree>({"Run2012B_SingleMu.root"}, "Events");
+  auto tree_files = std::vector<std::string>{"Run2012B_SingleMu.root"};
+  std::string tree_name = "Events";
 
-  auto njets = df.read<unsigned int>("nJet");
-  auto jets_pt = df.read<VecF>("Jet_pt");
-  auto jets_eta = df.read<VecF>("Jet_eta");
-  auto jets_phi = df.read<VecF>("Jet_phi");
-  auto jets_m = df.read<VecF>("Jet_mass");
-  auto jets_btag = df.read<VecF>("Jet_btag");
+  auto ds = df.load(dataset::input<Tree>(tree_files, tree_name));
 
-  auto cut_3jets = df.filter<cut>("3jets")(njets >= df.constant<unsigned int>(3));
+  auto njets = ds.read(dataset::column<unsigned int>("nJet"));
+  auto jets_pt = ds.read(dataset::column<VecF>("Jet_pt"));
+  auto jets_eta = ds.read(dataset::column<VecF>("Jet_eta"));
+  auto jets_phi = ds.read(dataset::column<VecF>("Jet_phi"));
+  auto jets_m = ds.read(dataset::column<VecF>("Jet_mass"));
+  auto jets_btag = ds.read(dataset::column<VecF>("Jet_btag"));
 
-  auto jets_p4 = df.define([](Vec<float> pt, Vec<float> eta, Vec<float> phi, Vec<float> m) {
-                              return ROOT::VecOps::Construct<XYZTVector>(ROOT::VecOps::Construct<PtEtaPhiMVector>(pt, eta, phi, m));})(jets_pt, jets_eta, jets_phi, jets_m);
-  auto top_trijet = df.define<TopTriJet>(172.5)(jets_p4);
-  auto trijet_pt = df.define(get_trijet_pt)(jets_pt, jets_eta, jets_phi, jets_m, top_trijet);
-  auto trijet_maxbtag = df.define(std::function(get_trijet_maxval))(jets_btag, top_trijet);
+  auto cut_3jets = df.filter(column::expression([](unsigned int njets){return njets>=3;}), njets);
 
-  auto trijet_pt_hist = df.book<Hist<1,float>>("trijet_pt",100,15,40).fill(trijet_pt).at(cut_3jets);
-  auto trijet_maxbtag_hist = df.book<Hist<1,float>>("trijet_maxbtag",100,0,1).fill(trijet_maxbtag).at(cut_3jets);
+  auto jets_p4 = df.define(column::expression([](Vec<float> pt, Vec<float> eta, Vec<float> phi, Vec<float> m) {
+                              return ROOT::VecOps::Construct<XYZTVector>(ROOT::VecOps::Construct<PtEtaPhiMVector>(pt, eta, phi, m));}),jets_pt, jets_eta, jets_phi, jets_m);
+  auto top_trijet = df.define(column::definition<TopTriJet>(172.5),jets_p4);
+  auto trijet_pt = df.define(column::expression(get_trijet_pt), jets_pt, jets_eta, jets_phi, jets_m, top_trijet);
+  auto trijet_maxbtag = df.define(column::expression(get_trijet_maxval),jets_btag,top_trijet);
+
+  auto trijet_pt_hist = df.make(query::plan<Hist<1,float>>("trijet_pt",100,15,40)).fill(trijet_pt).book(cut_3jets);
+  auto trijet_maxbtag_hist = df.make(query::plan<Hist<1,float>>("trijet_maxbtag",100,0,1)).fill(trijet_maxbtag).book(cut_3jets);
   
   TCanvas c;
   c.Divide(2,1);
@@ -107,5 +115,7 @@ int main(int argc, char **argv) {
   task(nthreads);
   auto toc = std::chrono::steady_clock::now();
   std::chrono::duration<double> elapsed_seconds = toc-tic;
-  std::cout << "used threads = " << ana::multithread::concurrency() << ", elapsed time = " << elapsed_seconds.count() << "s" << std::endl;
+  std::cout << "used threads = " << nthreads
+            << ", elapsed time = " << elapsed_seconds.count() << "s"
+            << std::endl;
 }

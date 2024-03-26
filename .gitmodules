@@ -1,7 +1,7 @@
-[submodule "analogical"]
-	path = analogical
-	url = git@github.com:taehyounpark/analogical.git
+[submodule "queryosity"]
+	path = queryosity
+	url = git@github.com:taehyounpark/queryosity.git
 
-[submodule "AnalysisPlugins"]
-	path = AnalysisPlugins
-	url = git@github.com:taehyounpark/AnalysisPlugins.git
+[submodule "queryosity-hep"]
+	path = queryosity-hep
+	url = git@github.com:taehyounpark/queryosity-hep.git

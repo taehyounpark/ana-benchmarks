@@ -3,8 +3,8 @@
 #include <ROOT/RVec.hxx>
 #include "TCanvas.h"
 
-#include "AnalysisPlugins/Tree.h"
-#include "AnalysisPlugins/Hist.h"
+#include "qhep/Tree.h"
+#include "qhep/Hist.h"
 
 template <typename T>
 using Vec = ROOT::RVec<T>;

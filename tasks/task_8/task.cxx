@@ -9,8 +9,8 @@
 #include "TCanvas.h"
 #include "Math/Vector4D.h"
 
-#include "AnalysisPlugins/Tree.h"
-#include "AnalysisPlugins/Hist.h"
+#include "qhep/Tree.h"
+#include "qhep/Hist.h"
 
 template <typename T> using Vec = ROOT::RVec<T>;
 using VecUI = Vec<unsigned int>;
