@@ -1,33 +1,41 @@
-#include <cstdlib>
-#include <chrono>
-#include <algorithm>
-#include <functional>
-
-#include "ana/analogical.h"
-
-#include <ROOT/RVec.hxx>
-#include "TCanvas.h"
-#include "Math/Vector4D.h"
-
 #include "HepQuery/Tree.h"
 #include "HepQuery/Hist.h"
+
+#include "TCanvas.h"
+#include "Math/Vector4D.h"
+#include "ROOT/RVec.hxx"
+
+using XYZTVector = ROOT::Math::XYZTVector;
+using PtEtaPhiMVector = ROOT::Math::PtEtaPhiMVector;
+constexpr static unsigned int PLACEHOLDER_VALUE = 99999;
 
 template <typename T> using Vec = ROOT::RVec<T>;
 using VecUI = Vec<unsigned int>;
 using VecI = Vec<int>;
 using VecF = Vec<float>;
 using VecD = Vec<double>;
-using FourVector = ROOT::Math::PtEtaPhiMVector;
-constexpr static unsigned int PLACEHOLDER_VALUE = 99999;
 
-using cut = ana::selection::cut;
-using weight = ana::selection::weight;
+#include "queryosity.h"
+
+using dataflow = queryosity::dataflow;
+namespace multithread = queryosity::multithread;
+namespace dataset = queryosity::dataset;
+namespace column = queryosity::column;
+namespace query = queryosity::query;
+namespace systematic = queryosity::systematic;
+
+#include <chrono>
+#include <functional>
+#include <algorithm>
+#include <cstdlib>
 
 auto concatf = [](VecF const &a, VecF const &b) { return Concatenate(a, b); };
 auto concati = [](const ROOT::RVec<int> &a, const ROOT::RVec<int> &b) { return Concatenate(a, b); };
+
 auto transverse_mass = [](VecF const &Lepton_pt, VecF const &Lepton_phi, float MET_pt, float MET_phi, unsigned int idx) {
   return sqrt(2.0 * Lepton_pt[idx] * MET_pt * (1.0 - cos(ROOT::VecOps::DeltaPhi(MET_phi, Lepton_phi[idx]))));
 };
+
 auto lepton_flavour = [](unsigned int nMuon, unsigned int nElectron) {
   return Concatenate(ROOT::RVec<int>(nMuon, 0), ROOT::RVec<int>(nElectron, 1));
 };
@@ -72,39 +80,42 @@ unsigned int additional_lepton_idx(Vec<float> const& pt, Vec<float> const& eta, 
 
 void task(int n) {
 
-  ana::multithread::enable(n);
-  auto df = ana::dataflow<HepQ::Tree>({"Run2012B_SingleMu.root"}, "Events");
+  dataflow df(multithread::enable(n));
+  auto tree_files = std::vector<std::string>{"Run2012B_SingleMu.root"};
+  std::string tree_name = "Events";
+  auto ds = df.load(dataset::input<HepQ::Tree>(tree_files,tree_name));
 
-  auto n_muon = df.read<unsigned int>("nMuon");
-  auto mus_pt = df.read<VecF>("Muon_pt");
-  auto mus_eta = df.read<VecF>("Muon_eta");
-  auto mus_phi = df.read<VecF>("Muon_phi");
-  auto mus_m = df.read<VecF>("Muon_mass");
-  auto mus_q = df.read<VecI>("Muon_charge");
+  auto n_muon = ds.read(dataset::column<unsigned int>("nMuon"));
+  auto mus_pt = ds.read(dataset::column<VecF>("Muon_pt"));
+  auto mus_eta = ds.read(dataset::column<VecF>("Muon_eta"));
+  auto mus_phi = ds.read(dataset::column<VecF>("Muon_phi"));
+  auto mus_m = ds.read(dataset::column<VecF>("Muon_mass"));
+  auto mus_q = ds.read(dataset::column<VecI>("Muon_charge"));
 
-  auto n_elec = df.read<unsigned int>("nElectron");
-  auto els_pt = df.read<VecF>("Electron_pt");
-  auto els_eta = df.read<VecF>("Electron_eta");
-  auto els_phi = df.read<VecF>("Electron_phi");
-  auto els_m = df.read<VecF>("Electron_mass");
-  auto els_q = df.read<VecI>("Electron_charge");
+  auto n_elec = ds.read(dataset::column<unsigned int>("nElectron"));
+  auto els_pt = ds.read(dataset::column<VecF>("Electron_pt"));
+  auto els_eta = ds.read(dataset::column<VecF>("Electron_eta"));
+  auto els_phi = ds.read(dataset::column<VecF>("Electron_phi"));
+  auto els_m = ds.read(dataset::column<VecF>("Electron_mass"));
+  auto els_q = ds.read(dataset::column<VecI>("Electron_charge"));
 
-  auto met_pt = df.read<float>("MET_pt");
-  auto met_phi = df.read<float>("MET_phi");
+  auto met_pt = ds.read(dataset::column<float>("MET_pt"));
+  auto met_phi = ds.read(dataset::column<float>("MET_phi"));
 
-  auto leps_pt = df.define(concatf)(mus_pt, els_pt);
-  auto leps_eta = df.define(concatf)(mus_eta, els_eta);
-  auto leps_phi = df.define(concatf)(mus_phi, els_phi);
-  auto leps_m = df.define(concatf)(mus_m, els_m);
-  auto leps_q = df.define(concati)(mus_q, els_q);
-  auto leps_type = df.define(lepton_flavour)(n_muon, n_elec);
+  auto leps_pt = df.define(column::expression(concatf),mus_pt, els_pt);
+  auto leps_eta = df.define(column::expression(concatf),mus_eta, els_eta);
+  auto leps_phi = df.define(column::expression(concatf),mus_phi, els_phi);
+  auto leps_m = df.define(column::expression(concatf),mus_m, els_m);
+  auto leps_q = df.define(column::expression(concati),mus_q, els_q);
+  auto leps_type = df.define(column::expression(lepton_flavour),n_muon, n_elec);
 
-  auto add_lep_idx = df.define(std::function(additional_lepton_idx))(leps_pt, leps_eta, leps_phi, leps_m, leps_q, leps_type);
-  auto mt = df.define(transverse_mass)(leps_pt, leps_phi, met_pt, met_phi, add_lep_idx);
+  auto add_lep_idx = df.define(column::expression(additional_lepton_idx),leps_pt, leps_eta, leps_phi, leps_m, leps_q, leps_type);
+  auto mt = df.define(column::expression(transverse_mass), leps_pt, leps_phi, met_pt, met_phi, add_lep_idx);
 
-  auto cut_3l_sfos = df.filter<cut>("3lep")((n_muon + n_elec) >= df.constant<unsigned int>(3)).filter<cut>("sfos")(add_lep_idx != df.constant(PLACEHOLDER_VALUE));
+  auto three = df.define(column::constant(3));
+  auto cut_3l_sfos = df.filter((n_muon + n_elec) >= three).filter(column::expression([](unsigned int idx){return (idx!=PLACEHOLDER_VALUE);}),add_lep_idx);
 
-  auto mt_hist = df.book<HepQ::Hist<1,float>>("mt",100,0,200).fill(mt).at(cut_3l_sfos);
+  auto mt_hist = df.make(query::plan<HepQ::Hist<1,float>>("mt",100,0,200)).fill(mt).book(cut_3l_sfos);
 
   TCanvas c;
   mt_hist->Draw();
@@ -118,5 +129,7 @@ int main(int argc, char **argv) {
   task(nthreads);
   auto toc = std::chrono::steady_clock::now();
   std::chrono::duration<double> elapsed_seconds = toc-tic;
-  std::cout << "used threads = " << ana::multithread::concurrency() << ", elapsed time = " << elapsed_seconds.count() << "s" << std::endl;
+  std::cout << "used threads = " << nthreads
+            << ", elapsed time = " << elapsed_seconds.count() << "s"
+            << std::endl;
 }

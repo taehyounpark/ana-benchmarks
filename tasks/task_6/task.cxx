@@ -78,7 +78,6 @@ void task(int n) {
 
   auto tree_files = std::vector<std::string>{"Run2012B_SingleMu.root"};
   std::string tree_name = "Events";
-
   auto ds = df.load(dataset::input<HepQ::Tree>(tree_files, tree_name));
 
   auto njets = ds.read(dataset::column<unsigned int>("nJet"));
@@ -98,7 +97,7 @@ void task(int n) {
 
   auto trijet_pt_hist = df.make(query::plan<HepQ::Hist<1,float>>("trijet_pt",100,15,40)).fill(trijet_pt).book(cut_3jets);
   auto trijet_maxbtag_hist = df.make(query::plan<HepQ::Hist<1,float>>("trijet_maxbtag",100,0,1)).fill(trijet_maxbtag).book(cut_3jets);
-  
+
   TCanvas c;
   c.Divide(2,1);
   c.cd(1);

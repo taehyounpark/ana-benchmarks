@@ -1,27 +1,37 @@
-#include "ana/analogical.h"
-
-#include "TCanvas.h"
-#include "ROOT/RVec.hxx"
-#include "Math/Vector4D.h"
-
 #include "HepQuery/Tree.h"
 #include "HepQuery/Hist.h"
 
-template <typename T>
-using Vec = ROOT::RVec<T>;
+#include "TCanvas.h"
+#include "Math/Vector4D.h"
+#include "ROOT/RVec.hxx"
+
+using XYZTVector = ROOT::Math::XYZTVector;
+using PtEtaPhiMVector = ROOT::Math::PtEtaPhiMVector;
+
+template <typename T> using Vec = ROOT::RVec<T>;
 using VecUI = Vec<unsigned int>;
 using VecI = Vec<int>;
 using VecF = Vec<float>;
 using VecD = Vec<double>;
-using FourVector = ROOT::Math::PtEtaPhiMVector;
 
-using cut = ana::selection::cut;
-using weight = ana::selection::weight;
+#include "queryosity.h"
 
-class dimuon_invariant_masses : public ana::column::definition<VecF(VecF pt, VecF eta, VecF phi, VecF m, VecF q)>
+using dataflow = queryosity::dataflow;
+namespace multithread = queryosity::multithread;
+namespace dataset = queryosity::dataset;
+namespace column = queryosity::column;
+namespace query = queryosity::query;
+namespace systematic = queryosity::systematic;
+
+#include <chrono>
+#include <functional>
+#include <algorithm>
+#include <cstdlib>
+
+class dimuon_invariant_masses : public column::definition<VecF(VecF pt, VecF eta, VecF phi, VecF m, VecF q)>
 {
 public:
-  virtual VecF evaluate(ana::observable<VecF> pt, ana::observable<VecF> eta, ana::observable<VecF> phi, ana::observable<VecF> m, ana::observable<VecF> q) const override
+  virtual VecF evaluate(observable<VecF> pt, observable<VecF> eta, observable<VecF> phi, observable<VecF> m, observable<VecF> q) const override
   {
     VecF masses;
     const auto c = ROOT::VecOps::Combinations(*pt, 2);
@@ -38,8 +48,10 @@ public:
 };
 
 void task(int n) {
-  ana::multithread::enable(n);
-  auto df = ana::dataflow<HepQ::Tree>({"Run2012B_SingleMu.root"}, "Events");
+  dataflow df(multithread::enable(n));
+  auto tree_files = std::vector<std::string>{"Run2012B_SingleMu.root"};
+  std::string tree_name = "Events";
+  auto ds = df.load(dataset::input<HepQ::Tree>(tree_files,tree_name));
   auto met = df.read<float>("MET_pt");
   auto nmuons = df.read<unsigned int>("nMuon");
   auto muons_pt = df.read<VecF>("Muon_pt");
@@ -67,5 +79,5 @@ int main(int argc, char **argv) {
   task(nthreads);
   auto toc = std::chrono::steady_clock::now();
   std::chrono::duration<double> elapsed_seconds = toc-tic;
-  std::cout << "used threads = " << ana::multithread::concurrency() << ", elapsed time = " << elapsed_seconds.count() << "s" << std::endl;
+  std::cout << "used threads = " << multithread::concurrency() << ", elapsed time = " << elapsed_seconds.count() << "s" << std::endl;
 }

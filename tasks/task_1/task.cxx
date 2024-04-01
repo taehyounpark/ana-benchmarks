@@ -1,26 +1,37 @@
-#include <cstdlib>
-#include <chrono>
-#include "ana/analogical.h"
-
-#include <ROOT/RVec.hxx>
-#include "TCanvas.h"
-
 #include "HepQuery/Tree.h"
 #include "HepQuery/Hist.h"
 
-template <typename T>
-using Vec = ROOT::RVec<T>;
+#include "TCanvas.h"
+#include "Math/Vector4D.h"
+#include "ROOT/RVec.hxx"
+
+using XYZTVector = ROOT::Math::XYZTVector;
+using PtEtaPhiMVector = ROOT::Math::PtEtaPhiMVector;
+
+template <typename T> using Vec = ROOT::RVec<T>;
 using VecUI = Vec<unsigned int>;
 using VecI = Vec<int>;
 using VecF = Vec<float>;
 using VecD = Vec<double>;
 
-using cut = ana::selection::cut;
-using weight = ana::selection::weight;
+#include "queryosity.h"
 
+using dataflow = queryosity::dataflow;
+namespace multithread = queryosity::multithread;
+namespace dataset = queryosity::dataset;
+namespace column = queryosity::column;
+namespace query = queryosity::query;
+namespace systematic = queryosity::systematic;
+
+#include <chrono>
+#include <functional>
+#include <algorithm>
+#include <cstdlib>
 void task(int n) {
-  ana::multithread::enable(n);
-  auto df = ana::dataflow<HepQ::Tree>({"Run2012B_SingleMu.root"}, "Events");
+  dataflow df(multithread::enable(n));
+  auto tree_files = std::vector<std::string>{"Run2012B_SingleMu.root"};
+  std::string tree_name = "Events";
+  auto ds = df.load(dataset::input<HepQ::Tree>(tree_files,tree_name));
   auto met = df.read<float>("MET_pt");
   auto all = df.filter<cut>("all",[](){return true;})();
   auto met_hist = df.book<HepQ::Hist<1,float>>("met",100,0,200).fill(met).at(all);
@@ -36,5 +47,5 @@ int main(int argc, char **argv) {
   task(nthreads);
   auto toc = std::chrono::steady_clock::now();
   std::chrono::duration<double> elapsed_seconds = toc-tic;
-  std::cout << "used threads = " << ana::multithread::concurrency() << ", elapsed time = " << elapsed_seconds.count() << "s" << std::endl;
+  std::cout << "used threads = " << multithread::concurrency() << ", elapsed time = " << elapsed_seconds.count() << "s" << std::endl;
 }
