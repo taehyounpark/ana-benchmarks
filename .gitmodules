@@ -2,6 +2,6 @@
 	path = queryosity
 	url = git@github.com:taehyounpark/queryosity.git
 
-[submodule "queryosity-hep"]
-	path = queryosity-hep
-	url = git@github.com:taehyounpark/queryosity-hep.git
+[submodule "HepQuery"]
+	path = HepQuery
+	url = git@github.com:taehyounpark/HepQuery.git
