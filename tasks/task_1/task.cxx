@@ -5,8 +5,8 @@
 #include <ROOT/RVec.hxx>
 #include "TCanvas.h"
 
-#include "qhep/Tree.h"
-#include "qhep/Hist.h"
+#include "HepQuery/Tree.h"
+#include "HepQuery/Hist.h"
 
 template <typename T>
 using Vec = ROOT::RVec<T>;
@@ -20,10 +20,10 @@ using weight = ana::selection::weight;
 
 void task(int n) {
   ana::multithread::enable(n);
-  auto df = ana::dataflow<Tree>({"Run2012B_SingleMu.root"}, "Events");
+  auto df = ana::dataflow<HepQ::Tree>({"Run2012B_SingleMu.root"}, "Events");
   auto met = df.read<float>("MET_pt");
   auto all = df.filter<cut>("all",[](){return true;})();
-  auto met_hist = df.book<Hist<1,float>>("met",100,0,200).fill(met).at(all);
+  auto met_hist = df.book<HepQ::Hist<1,float>>("met",100,0,200).fill(met).at(all);
   TCanvas c;
   met_hist->Draw();
   c.SaveAs("task_1.png");

@@ -3,8 +3,8 @@
 #include <ROOT/RVec.hxx>
 #include "TCanvas.h"
 
-#include "qhep/Tree.h"
-#include "qhep/Hist.h"
+#include "HepQuery/Tree.h"
+#include "HepQuery/Hist.h"
 
 template <typename T>
 using Vec = ROOT::RVec<T>;
@@ -18,13 +18,13 @@ using weight = ana::selection::weight;
 
 void task(int n) {
   ana::multithread::enable(n);
-  auto df = ana::dataflow<Tree>({"Run2012B_SingleMu.root"}, "Events");
+  auto df = ana::dataflow<HepQ::Tree>({"Run2012B_SingleMu.root"}, "Events");
   auto met = df.read<float>("MET_pt");
   auto jets_pt = df.read<VecF>("Jet_pt");
   auto jets_eta = df.read<VecF>("Jet_eta");
   auto njets_pt40 = df.define([](VecF const& jets_pt){return jets_pt[jets_pt > 40.0].size();})(jets_pt);
   auto cut_2jets = df.filter<cut>("2jets")(njets_pt40 >= df.constant<unsigned int>(2));
-  auto met_hist = df.book<Hist<1,float>>("met",100,0,200).fill(met).at(cut_2jets);
+  auto met_hist = df.book<HepQ::Hist<1,float>>("met",100,0,200).fill(met).at(cut_2jets);
   TCanvas c;
   met_hist->Draw();
   c.SaveAs("task_4.png");

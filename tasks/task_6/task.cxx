@@ -1,5 +1,5 @@
-#include "qhep/Tree.h"
-#include "qhep/Hist.h"
+#include "HepQuery/Tree.h"
+#include "HepQuery/Hist.h"
 
 #include "TCanvas.h"
 #include "Math/Vector4D.h"
@@ -14,7 +14,7 @@ using VecI = Vec<int>;
 using VecF = Vec<float>;
 using VecD = Vec<double>;
 
-#include "queryosity/queryosity.h"
+#include "queryosity.h"
 
 using dataflow = queryosity::dataflow;
 namespace multithread = queryosity::multithread;
@@ -79,7 +79,7 @@ void task(int n) {
   auto tree_files = std::vector<std::string>{"Run2012B_SingleMu.root"};
   std::string tree_name = "Events";
 
-  auto ds = df.load(dataset::input<Tree>(tree_files, tree_name));
+  auto ds = df.load(dataset::input<HepQ::Tree>(tree_files, tree_name));
 
   auto njets = ds.read(dataset::column<unsigned int>("nJet"));
   auto jets_pt = ds.read(dataset::column<VecF>("Jet_pt"));
@@ -96,8 +96,8 @@ void task(int n) {
   auto trijet_pt = df.define(column::expression(get_trijet_pt), jets_pt, jets_eta, jets_phi, jets_m, top_trijet);
   auto trijet_maxbtag = df.define(column::expression(get_trijet_maxval),jets_btag,top_trijet);
 
-  auto trijet_pt_hist = df.make(query::plan<Hist<1,float>>("trijet_pt",100,15,40)).fill(trijet_pt).book(cut_3jets);
-  auto trijet_maxbtag_hist = df.make(query::plan<Hist<1,float>>("trijet_maxbtag",100,0,1)).fill(trijet_maxbtag).book(cut_3jets);
+  auto trijet_pt_hist = df.make(query::plan<HepQ::Hist<1,float>>("trijet_pt",100,15,40)).fill(trijet_pt).book(cut_3jets);
+  auto trijet_maxbtag_hist = df.make(query::plan<HepQ::Hist<1,float>>("trijet_maxbtag",100,0,1)).fill(trijet_maxbtag).book(cut_3jets);
   
   TCanvas c;
   c.Divide(2,1);

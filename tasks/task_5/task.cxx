@@ -4,8 +4,8 @@
 #include "ROOT/RVec.hxx"
 #include "Math/Vector4D.h"
 
-#include "qhep/Tree.h"
-#include "qhep/Hist.h"
+#include "HepQuery/Tree.h"
+#include "HepQuery/Hist.h"
 
 template <typename T>
 using Vec = ROOT::RVec<T>;
@@ -39,7 +39,7 @@ public:
 
 void task(int n) {
   ana::multithread::enable(n);
-  auto df = ana::dataflow<Tree>({"Run2012B_SingleMu.root"}, "Events");
+  auto df = ana::dataflow<HepQ::Tree>({"Run2012B_SingleMu.root"}, "Events");
   auto met = df.read<float>("MET_pt");
   auto nmuons = df.read<unsigned int>("nMuon");
   auto muons_pt = df.read<VecF>("Muon_pt");
@@ -54,7 +54,7 @@ void task(int n) {
   // do the combinatorics
   auto cut_dimuon_os_60m120 = cut_dimuon.filter<cut>("dimuon_os_60m120",[](VecF const& dimuons_m){return Sum(dimuons_m > 60 && dimuons_m < 120) > 0;})(dimuons_m);
 
-  auto met_hist = df.book<Hist<1,float>>("met",100,0,200).fill(met).at(cut_dimuon_os_60m120);
+  auto met_hist = df.book<HepQ::Hist<1,float>>("met",100,0,200).fill(met).at(cut_dimuon_os_60m120);
   TCanvas c;
   met_hist->Draw();
   c.SaveAs("task_5.png");

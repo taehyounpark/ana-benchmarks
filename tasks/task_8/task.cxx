@@ -9,8 +9,8 @@
 #include "TCanvas.h"
 #include "Math/Vector4D.h"
 
-#include "qhep/Tree.h"
-#include "qhep/Hist.h"
+#include "HepQuery/Tree.h"
+#include "HepQuery/Hist.h"
 
 template <typename T> using Vec = ROOT::RVec<T>;
 using VecUI = Vec<unsigned int>;
@@ -73,7 +73,7 @@ unsigned int additional_lepton_idx(Vec<float> const& pt, Vec<float> const& eta, 
 void task(int n) {
 
   ana::multithread::enable(n);
-  auto df = ana::dataflow<Tree>({"Run2012B_SingleMu.root"}, "Events");
+  auto df = ana::dataflow<HepQ::Tree>({"Run2012B_SingleMu.root"}, "Events");
 
   auto n_muon = df.read<unsigned int>("nMuon");
   auto mus_pt = df.read<VecF>("Muon_pt");
@@ -104,7 +104,7 @@ void task(int n) {
 
   auto cut_3l_sfos = df.filter<cut>("3lep")((n_muon + n_elec) >= df.constant<unsigned int>(3)).filter<cut>("sfos")(add_lep_idx != df.constant(PLACEHOLDER_VALUE));
 
-  auto mt_hist = df.book<Hist<1,float>>("mt",100,0,200).fill(mt).at(cut_3l_sfos);
+  auto mt_hist = df.book<HepQ::Hist<1,float>>("mt",100,0,200).fill(mt).at(cut_3l_sfos);
 
   TCanvas c;
   mt_hist->Draw();

@@ -3,13 +3,13 @@
 #include <cstdlib>
 #include <functional>
 
-#include "queryosity/queryosity.h"
+#include "queryosity.h"
 
 #include "TCanvas.h"
 #include <ROOT/RVec.hxx>
 
-#include "qhep/Hist.h"
-#include "qhep/Tree.h"
+#include "HepQuery/Hist.h"
+#include "HepQuery/Tree.h"
 
 template <typename T> using Vec = ROOT::RVec<T>;
 using VecUI = Vec<unsigned int>;
@@ -69,7 +69,7 @@ void task(int n) {
 
   std::vector<std::string> tree_files{"Run2012B_SingleMu.root"};
   std::string tree_name = "Events";
-  auto ds = df.load(dataset::input<Tree>(tree_files, tree_name));
+  auto ds = df.load(dataset::input<HepQ::Tree>(tree_files, tree_name));
 
   auto n_jet = ds.read(dataset::column<unsigned int>("nJet"));
   auto jets_pt = ds.read(dataset::column<VecF>("Jet_pt"));
@@ -105,7 +105,7 @@ void task(int n) {
       goodjet_mask);
 
   auto h_sumpt_goodjet =
-      df.make(query::plan<Hist<1, float>>("goodjet_sumpt", 185, 15, 200))
+      df.make(query::plan<HepQ::Hist<1, float>>("goodjet_sumpt", 185, 15, 200))
           .fill(goodjet_sumpt)
           .book(cut_goodjet);
 

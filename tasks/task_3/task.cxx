@@ -5,8 +5,8 @@
 #include <ROOT/RVec.hxx>
 #include "TCanvas.h"
 
-#include "qhep/Tree.h"
-#include "qhep/Hist.h"
+#include "HepQuery/Tree.h"
+#include "HepQuery/Hist.h"
 
 using cut = ana::selection::cut;
 using weight = ana::selection::weight;
@@ -19,7 +19,7 @@ using VecD = Vec<double>;
 
 void task(int n) {
   ana::multithread::enable(n);
-  auto df = ana::dataflow<Tree>({"Run2012B_SingleMu.root"}, "Events");
+  auto df = ana::dataflow<HepQ::Tree>({"Run2012B_SingleMu.root"}, "Events");
   auto n_jet = df.read<unsigned int>("nJet");
   auto jets_pt = df.read<VecF>("Jet_pt");
   auto jets_eta = df.read<VecF>("Jet_eta");
@@ -27,7 +27,7 @@ void task(int n) {
   auto jets_m = df.read<VecF>("Jet_mass");
   auto jets_pt_sel = jets_pt[jets_eta > df.constant(-1.0) && jets_eta < df.constant(1.0)];
   auto all = df.filter<cut>("all")(df.constant(true));
-  auto jets_pt_hist = df.book<Hist<1,VecF>>("jets_pt",45,15,60).fill(jets_pt_sel).at(all);
+  auto jets_pt_hist = df.book<HepQ::Hist<1,VecF>>("jets_pt",45,15,60).fill(jets_pt_sel).at(all);
   TCanvas c;
   jets_pt_hist->Draw();
   c.SaveAs("task_3.png");
