@@ -88,26 +88,24 @@ void task(int n) {
   auto els_phi = ds.read(dataset::column<VecF>("Electron_phi"));
 
   auto jets_ptcut = df.define(
-      column::expression([](VecF const &pts) { return pts > 30; }), jets_pt);
-  auto jets_mudr = df.define(column::definition<DRMinMaxSel>(0.4, 10.0),
-                             jets_eta, jets_phi, mus_pt, mus_eta, mus_phi);
-  auto jets_eldr = df.define(column::definition<DRMinMaxSel>(0.4, 10.0),
-                             jets_eta, jets_phi, els_pt, els_eta, els_phi);
+      column::expression([](VecF const &pts) { return pts > 30; }))(jets_pt);
+  auto jets_mudr = df.define(column::definition<DRMinMaxSel>(0.4, 10.0))(
+      jets_eta, jets_phi, mus_pt, mus_eta, mus_phi);
+  auto jets_eldr = df.define(column::definition<DRMinMaxSel>(0.4, 10.0))(
+      jets_eta, jets_phi, els_pt, els_eta, els_phi);
   auto goodjet_mask = jets_ptcut && jets_mudr && jets_eldr;
   auto goodjet_sumpt =
       df.define(column::expression([](VecI const &good, VecF const &pt) {
-                  return Sum(pt[good]);
-                }),
-                goodjet_mask, jets_pt);
+        return Sum(pt[good]);
+      }))(goodjet_mask, jets_pt);
 
-  auto cut_goodjet = df.filter(
-      column::expression([](VecI const &goodjet) { return Sum(goodjet); }),
-      goodjet_mask);
+  auto cut_goodjet = df.filter(column::expression(
+      [](VecI const &goodjet) { return Sum(goodjet); }))(goodjet_mask);
 
   auto h_sumpt_goodjet =
-      df.make(query::plan<HepQ::Hist<1, float>>("goodjet_sumpt", 185, 15, 200))
+      df.get(query::output<HepQ::Hist<1, float>>("goodjet_sumpt", 185, 15, 200))
           .fill(goodjet_sumpt)
-          .book(cut_goodjet);
+          .at(cut_goodjet);
 
   TCanvas c;
   h_sumpt_goodjet->Draw();
