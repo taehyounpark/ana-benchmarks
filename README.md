@@ -1,4 +1,4 @@
-# ana-benchmarks
+# queryosity-benchmarks
 
 ## Buildling & reproducing results
 
@@ -10,7 +10,7 @@ $ cd ../results/
 $ task_<i> <num_threads>
 ```
 
-## [IRIS HEP ADL](https://github.com/iris-hep/adl-benchmarks-index/tree/master)
+## [IRIS HEP ADL benchmarks](https://github.com/iris-hep/adl-benchmarks-index/tree/master)
 
 Input data file:
 * [Converted to NanoAOD](https://github.com/cms-opendata-analyses/AOD2NanoAODOutreachTool) from [2012 CMS open data](http://opendata.cern.ch/record/6021):
