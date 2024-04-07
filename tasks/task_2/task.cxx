@@ -1,9 +1,9 @@
-#include "HepQuery/Tree.h"
 #include "HepQuery/Hist.h"
+#include "HepQuery/Tree.h"
 
-#include "TCanvas.h"
 #include "Math/Vector4D.h"
 #include "ROOT/RVec.hxx"
+#include "TCanvas.h"
 
 using XYZTVector = ROOT::Math::XYZTVector;
 using PtEtaPhiMVector = ROOT::Math::PtEtaPhiMVector;
@@ -24,19 +24,22 @@ namespace selection = queryosity::selection;
 namespace query = queryosity::query;
 namespace systematic = queryosity::systematic;
 
-#include <chrono>
-#include <functional>
 #include <algorithm>
+#include <chrono>
 #include <cstdlib>
+#include <functional>
 
 void task(int n) {
   dataflow df(multithread::enable(n));
   std::vector<std::string> tree_files{"Run2012B_SingleMu.root"};
   std::string tree_name = "Events";
-  auto ds = df.load(dataset::input<HepQ::Tree>(tree_files,tree_name));
+  auto ds = df.load(dataset::input<HepQ::Tree>(tree_files, tree_name));
   auto jets_pt = ds.read(dataset::column<VecF>("Jet_pt"));
   auto all = df.filter(column::constant(true));
-  auto jets_pt_hist = df.get(query::output<HepQ::Hist<1,VecF>>("jets_pt",45,15,60)).fill(jets_pt).at(all);
+  auto jets_pt_hist =
+      df.get(query::output<HepQ::Hist<1, VecF>>("jets_pt", 45, 15, 60))
+          .fill(jets_pt)
+          .at(all);
   TCanvas c;
   jets_pt_hist->Draw();
   c.SaveAs("task_2.png");

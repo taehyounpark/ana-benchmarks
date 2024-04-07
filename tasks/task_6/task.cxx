@@ -39,7 +39,7 @@ public:
     std::size_t idx1 = 0, idx2 = 1, idx3 = 2;
     for (std::size_t i = 0; i <= njets_tot - n; ++i) {
       auto p1 = (*jets_p4)[i];
-      for (std::size_t j = i + 1; j <=njets_tot - n + 1; ++j) {
+      for (std::size_t j = i + 1; j <= njets_tot - n + 1; ++j) {
         auto p2 = (*jets_p4)[j];
         for (std::size_t k = j + 1; k <= njets_tot - n + 2; ++k) {
           auto p3 = (*jets_p4)[k];

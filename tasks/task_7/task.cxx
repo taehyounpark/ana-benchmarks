@@ -27,7 +27,8 @@ namespace systematic = queryosity::systematic;
 class IsolatedJetSelection
     : public column::definition<VecI(VecF, VecF, VecF, VecF, VecF)> {
 public:
-  IsolatedJetSelection(float minDR, float pt2Min) : m_minDR(minDR), m_pt2Min(pt2Min) {}
+  IsolatedJetSelection(float minDR, float pt2Min)
+      : m_minDR(minDR), m_pt2Min(pt2Min) {}
   virtual ~IsolatedJetSelection() = default;
   virtual VecI evaluate(column::observable<VecF> eta1,
                         column::observable<VecF> phi1,
@@ -67,7 +68,7 @@ void task(int n) {
 
   dataflow df(multithread::enable(n));
 
-    std::vector<std::string> tree_files{"Run2012B_SingleMu.root"};
+  std::vector<std::string> tree_files{"Run2012B_SingleMu.root"};
   std::string tree_name = "Events";
   auto ds = df.load(dataset::input<HepQ::Tree>(tree_files, tree_name));
 
@@ -89,10 +90,10 @@ void task(int n) {
 
   auto jets_ptcut = df.define(
       column::expression([](VecF const &pts) { return pts > 30; }))(jets_pt);
-  auto jets_mudr = df.define(column::definition<IsolatedJetSelection>(0.4, 10.0))(
-      jets_eta, jets_phi, mus_pt, mus_eta, mus_phi);
-  auto jets_eldr = df.define(column::definition<IsolatedJetSelection>(0.4, 10.0))(
-      jets_eta, jets_phi, els_pt, els_eta, els_phi);
+  auto jets_mudr = df.define(column::definition<IsolatedJetSelection>(
+      0.4, 10.0))(jets_eta, jets_phi, mus_pt, mus_eta, mus_phi);
+  auto jets_eldr = df.define(column::definition<IsolatedJetSelection>(
+      0.4, 10.0))(jets_eta, jets_phi, els_pt, els_eta, els_phi);
   auto goodjet_mask = jets_ptcut && jets_mudr && jets_eldr;
   auto goodjet_sumpt =
       df.define(column::expression([](VecF const &vec, VecI const &mask) {
