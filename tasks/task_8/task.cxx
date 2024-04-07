@@ -91,7 +91,7 @@ unsigned int additional_lepton_idx(Vec<float> const &pt, Vec<float> const &eta,
 void task(int n) {
 
   dataflow df(multithread::enable(n));
-  auto tree_files = std::vector<std::string>{"Run2012B_SingleMu.root"};
+  std::vector<std::string> tree_files{"Run2012B_SingleMu.root"};
   std::string tree_name = "Events";
   auto ds = df.load(dataset::input<HepQ::Tree>(tree_files, tree_name));
 

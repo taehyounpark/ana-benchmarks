@@ -20,6 +20,7 @@ using dataflow = queryosity::dataflow;
 namespace multithread = queryosity::multithread;
 namespace dataset = queryosity::dataset;
 namespace column = queryosity::column;
+namespace selection = queryosity::selection;
 namespace query = queryosity::query;
 namespace systematic = queryosity::systematic;
 
@@ -30,12 +31,12 @@ namespace systematic = queryosity::systematic;
 
 void task(int n) {
   dataflow df(multithread::enable(n));
-  auto tree_files = std::vector<std::string>{"Run2012B_SingleMu.root"};
+  std::vector<std::string> tree_files{"Run2012B_SingleMu.root"};
   std::string tree_name = "Events";
   auto ds = df.load(dataset::input<HepQ::Tree>(tree_files,tree_name));
-  auto jets_pt = df.read<VecF>("Jet_pt");
-  auto all = df.filter<cut>("all")(df.constant(true));
-  auto jets_pt_hist = df.book<HepQ::Hist<1,VecF>>("jets_pt",45,15,60).fill(jets_pt).at(all);
+  auto jets_pt = ds.read(dataset::column<VecF>("Jet_pt"));
+  auto all = df.filter(column::constant(true));
+  auto jets_pt_hist = df.get(query::output<HepQ::Hist<1,VecF>>("jets_pt",45,15,60)).fill(jets_pt).at(all);
   TCanvas c;
   jets_pt_hist->Draw();
   c.SaveAs("task_2.png");
@@ -43,10 +44,14 @@ void task(int n) {
 
 int main(int argc, char **argv) {
   int nthreads = 0;
-  if (argc==2) { nthreads=strtol(argv[1], nullptr, 0); }
+  if (argc == 2) {
+    nthreads = strtol(argv[1], nullptr, 0);
+  }
   auto tic = std::chrono::steady_clock::now();
   task(nthreads);
   auto toc = std::chrono::steady_clock::now();
-  std::chrono::duration<double> elapsed_seconds = toc-tic;
-  std::cout << "used threads = " << multithread::concurrency() << ", elapsed time = " << elapsed_seconds.count() << "s" << std::endl;
+  std::chrono::duration<double> elapsed_seconds = toc - tic;
+  std::cout << "used threads = " << nthreads
+            << ", elapsed time = " << elapsed_seconds.count() << "s"
+            << std::endl;
 }

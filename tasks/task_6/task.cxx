@@ -34,13 +34,14 @@ public:
   virtual Vec<std::size_t>
   evaluate(column::observable<Vec<XYZTVector>> jets_p4) const override {
     constexpr std::size_t n = 3;
+    const auto njets_tot = jets_p4->size();
     float distance = 1e9;
     std::size_t idx1 = 0, idx2 = 1, idx3 = 2;
-    for (std::size_t i = 0; i <= jets_p4->size() - n; ++i) {
+    for (std::size_t i = 0; i <= njets_tot - n; ++i) {
       auto p1 = (*jets_p4)[i];
-      for (std::size_t j = i + 1; j <= jets_p4->size() - n + 1; ++j) {
+      for (std::size_t j = i + 1; j <=njets_tot - n + 1; ++j) {
         auto p2 = (*jets_p4)[j];
-        for (std::size_t k = j + 1; k <= jets_p4->size() - n + 2; ++k) {
+        for (std::size_t k = j + 1; k <= njets_tot - n + 2; ++k) {
           auto p3 = (*jets_p4)[k];
           const auto candidate_mass = (p1 + p2 + p3).mass();
           const auto candidate_distance = std::abs(candidate_mass - m_top_mass);
@@ -80,7 +81,7 @@ auto get_trijet_maxval = [](Vec<float> const &vals,
 void task(int n) {
   dataflow df(multithread::enable(n));
 
-  auto tree_files = std::vector<std::string>{"Run2012B_SingleMu.root"};
+  std::vector<std::string> tree_files{"Run2012B_SingleMu.root"};
   std::string tree_name = "Events";
   auto ds = df.load(dataset::input<HepQ::Tree>(tree_files, tree_name));
 

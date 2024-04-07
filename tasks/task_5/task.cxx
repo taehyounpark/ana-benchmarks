@@ -49,7 +49,7 @@ public:
 
 void task(int n) {
   dataflow df(multithread::enable(n));
-  auto tree_files = std::vector<std::string>{"Run2012B_SingleMu.root"};
+  std::vector<std::string> tree_files{"Run2012B_SingleMu.root"};
   std::string tree_name = "Events";
   auto ds = df.load(dataset::input<HepQ::Tree>(tree_files,tree_name));
   auto met = df.read<float>("MET_pt");
