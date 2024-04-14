@@ -2,6 +2,6 @@
 	path = queryosity
 	url = git@github.com:taehyounpark/queryosity.git
 
-[submodule "HepQuery"]
-	path = HepQuery
-	url = git@github.com:taehyounpark/HepQuery.git
+[submodule "AnaQuery"]
+	path = AnaQuery
+	url = git@github.com:taehyounpark/AnaQuery.git
