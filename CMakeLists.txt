@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.12)
 project(ana-benchmarks)
 
 add_subdirectory(queryosity/)
-add_subdirectory(HepQuery/)
+add_subdirectory(AnaQuery/)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_CXX_FLAGS "-O3 -Wall -Wextra")
@@ -16,7 +16,7 @@ function(add_benchmark TASK_NAME)
         ${ROOT_INCLUDE_DIR}
         ${ROOT_LIBRARY_DIR}
     )
-    target_link_libraries(${TASK_NAME} HepQuery ${ROOT_LIBRARIES})
+    target_link_libraries(${TASK_NAME} AnaQuery ${ROOT_LIBRARIES})
 endfunction(add_benchmark)
 
 add_benchmark(task_1)
@@ -31,4 +31,4 @@ add_benchmark(task_8)
 set(SETUP ${CMAKE_CURRENT_BINARY_DIR}/setup.sh)
 file(WRITE ${SETUP} "#!/bin/bash\n")
 file(APPEND ${SETUP} "export PATH=$PATH:" ${CMAKE_RUNTIME_OUTPUT_DIRECTORY} "\n")
-file(APPEND ${SETUP} "source HepQuery/setup.sh\n")
+file(APPEND ${SETUP} "source AnaQuery/setup.sh\n")

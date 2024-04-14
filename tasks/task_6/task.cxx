@@ -1,5 +1,5 @@
-#include "HepQuery/Hist.h"
-#include "HepQuery/Tree.h"
+#include "AnaQuery/Hist.h"
+#include "AnaQuery/Tree.h"
 
 #include "Math/Vector4D.h"
 #include "ROOT/RVec.hxx"
@@ -83,7 +83,7 @@ void task(int n) {
 
   std::vector<std::string> tree_files{"Run2012B_SingleMu.root"};
   std::string tree_name = "Events";
-  auto ds = df.load(dataset::input<HepQ::Tree>(tree_files, tree_name));
+  auto ds = df.load(dataset::input<AnaQ::Tree>(tree_files, tree_name));
 
   auto njets = ds.read(dataset::column<unsigned int>("nJet"));
   auto jets_pt = ds.read(dataset::column<VecF>("Jet_pt"));
@@ -107,11 +107,11 @@ void task(int n) {
       df.define(column::expression(get_trijet_maxval))(jets_btag, top_trijet);
 
   auto trijet_pt_hist =
-      df.get(query::output<HepQ::Hist<1, float>>("trijet_pt", 100, 15, 40))
+      df.get(query::output<AnaQ::Hist<1, float>>("trijet_pt", 100, 15, 40))
           .fill(trijet_pt)
           .at(cut_3jets);
   auto trijet_maxbtag_hist =
-      df.get(query::output<HepQ::Hist<1, float>>("trijet_maxbtag", 100, 0, 1))
+      df.get(query::output<AnaQ::Hist<1, float>>("trijet_maxbtag", 100, 0, 1))
           .fill(trijet_maxbtag)
           .at(cut_3jets);
 

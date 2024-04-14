@@ -1,5 +1,5 @@
-#include "HepQuery/Hist.h"
-#include "HepQuery/Tree.h"
+#include "AnaQuery/Hist.h"
+#include "AnaQuery/Tree.h"
 
 #include "Math/Vector4D.h"
 #include "ROOT/RVec.hxx"
@@ -93,7 +93,7 @@ void task(int n) {
   dataflow df(multithread::enable(n));
   std::vector<std::string> tree_files{"Run2012B_SingleMu.root"};
   std::string tree_name = "Events";
-  auto ds = df.load(dataset::input<HepQ::Tree>(tree_files, tree_name));
+  auto ds = df.load(dataset::input<AnaQ::Tree>(tree_files, tree_name));
 
   auto n_muon = ds.read(dataset::column<unsigned int>("nMuon"));
   auto mus_pt = ds.read(dataset::column<VecF>("Muon_pt"));
@@ -131,7 +131,7 @@ void task(int n) {
                            return (idx != PLACEHOLDER_VALUE);
                          }))(add_lep_idx);
 
-  auto mt_hist = df.get(query::output<HepQ::Hist<1, float>>("mt", 100, 0, 200))
+  auto mt_hist = df.get(query::output<AnaQ::Hist<1, float>>("mt", 100, 0, 200))
                      .fill(mt)
                      .at(cut_3l_sfos);
 

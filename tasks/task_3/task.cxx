@@ -1,5 +1,5 @@
-#include "HepQuery/Hist.h"
-#include "HepQuery/Tree.h"
+#include "AnaQuery/Hist.h"
+#include "AnaQuery/Tree.h"
 
 #include "Math/Vector4D.h"
 #include "ROOT/RVec.hxx"
@@ -31,7 +31,7 @@ void task(int n) {
   dataflow df(multithread::enable(n));
   std::vector<std::string> tree_files{"Run2012B_SingleMu.root"};
   std::string tree_name = "Events";
-  auto ds = df.load(dataset::input<HepQ::Tree>(tree_files, tree_name));
+  auto ds = df.load(dataset::input<AnaQ::Tree>(tree_files, tree_name));
   auto jets_pt = ds.read(dataset::column<VecF>("Jet_pt"));
   auto jets_pt_sel = df.define(column::expression([](VecF const &pts) {
     return pts[ROOT::VecOps::abs(pts) < 1.0];
@@ -39,7 +39,7 @@ void task(int n) {
   auto cut_jet = df.filter(column::expression(
       [](VecF const &pts) { return pts.size(); }))(jets_pt_sel);
   auto jets_pt_hist =
-      df.get(query::output<HepQ::Hist<1, VecF>>("jets_pt", 45, 15, 60))
+      df.get(query::output<AnaQ::Hist<1, VecF>>("jets_pt", 45, 15, 60))
           .fill(jets_pt_sel)
           .at(cut_jet);
   TCanvas c;

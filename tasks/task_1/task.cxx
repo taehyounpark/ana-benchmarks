@@ -1,5 +1,5 @@
-#include "HepQuery/Hist.h"
-#include "HepQuery/Tree.h"
+#include "AnaQuery/Hist.h"
+#include "AnaQuery/Tree.h"
 
 #include "Math/Vector4D.h"
 #include "ROOT/RVec.hxx"
@@ -32,11 +32,11 @@ void task(int n) {
   dataflow df(multithread::enable(n));
   std::vector<std::string> tree_files{"Run2012B_SingleMu.root"};
   std::string tree_name = "Events";
-  auto ds = df.load(dataset::input<HepQ::Tree>(tree_files, tree_name));
+  auto ds = df.load(dataset::input<AnaQ::Tree>(tree_files, tree_name));
   auto met = ds.read(dataset::column<float>("MET_pt"));
   auto all = df.filter(column::constant(true));
   auto met_hist =
-      df.get(query::output<HepQ::Hist<1, float>>("met", 100, 0, 200))
+      df.get(query::output<AnaQ::Hist<1, float>>("met", 100, 0, 200))
           .fill(met)
           .at(all);
   TCanvas c;
