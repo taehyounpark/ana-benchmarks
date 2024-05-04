@@ -15,7 +15,7 @@ using VecI = Vec<int>;
 using VecF = Vec<float>;
 using VecD = Vec<double>;
 
-#include "queryosity.h"
+#include <queryosity.hpp>
 
 using dataflow = queryosity::dataflow;
 namespace multithread = queryosity::multithread;
